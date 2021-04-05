@@ -1,9 +1,13 @@
 package proc;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 // w w w  . jav  a 2s  . com
 import javax.imageio.ImageIO;
 
@@ -12,12 +16,12 @@ public class ColorChange {
 	public static void main(String[] args) throws Exception {
 		int width = 512;
 		int height = 512;
-		File f = new File(Configuration.INPUT_PATH+"op2.png");
+		File f = new File(Configuration.INPUT_PATH + "op.png");
 
 		BufferedImage image = ImageIO.read(f);
 		BufferedImage image2 = replaceChar(image);
 
-		ImageIO.write(image2, "png", new File(Configuration.PROCESSING_PATH+"tmp.png"));
+		ImageIO.write(image2, "png", new File(Configuration.PROCESSING_PATH + "tmp.png"));
 		/*
 		 * // BufferedImage image = new BufferedImage(width, height,
 		 * BufferedImage.TYPE_4BYTE_ABGR); Graphics2D g2d = image.createGraphics();
@@ -34,6 +38,8 @@ public class ColorChange {
 	private static BufferedImage replaceChar(BufferedImage image) {
 		int width = image.getWidth();
 		int height = image.getHeight();
+		System.out.printf("W: %d, H: %d%n", width, height);
+
 		WritableRaster raster = image.getRaster();
 
 		int lightWhite = 150;
@@ -47,37 +53,61 @@ public class ColorChange {
 		Color purple = new Color(91, 0, 91);
 		Color purple2 = new Color(78, 50, 78);
 
-		for (int xx = 0; xx < width; xx++) {
-			for (int yy = 0; yy < height; yy++) {
+		int startY = 0;
+		int continuousYCol = 0;
+		List<Color> prevYColors = new ArrayList<>();
+		for (int yy = 0; yy < height; yy++) {
+			System.out.println("<<<<< y:" + yy + ">>>>>");
+			List<Color> yColors = new ArrayList<>();
+
+			for (int xx = 0; xx < width; xx++) {
 				int[] pixels = raster.getPixel(xx, yy, (int[]) null);
 
+				Color color = new Color(pixels[0], pixels[1], pixels[2]);
+				yColors.add(color);
+
 				// RGB 255~0
-				if (compareColor(pixels, grey,range) || compareColor(pixels, grey2,range) || compareColor(pixels, black,range)
-						|| compareColor(pixels, purple,range) || compareColor(pixels, purple2,range)) {
+				if (compareColor(pixels, grey, range) || compareColor(pixels, grey2, range)
+						|| compareColor(pixels, black, range) || compareColor(pixels, purple, range)
+						|| compareColor(pixels, purple2, range)) {
 					pixels[0] = 255;
 					pixels[1] = 255;
 					pixels[2] = 255;
-				}  else {
+				} else {
 					pixels[0] = 0;
 					pixels[1] = 0;
 					pixels[2] = 0;
 				}
 
 				/*
-				else if ((pixels[0] > lightWhite && pixels[1] > lightWhite && pixels[2] > lightWhite)
-						|| (pixels[0] > majorColor && pixels[1] < minorColor && pixels[2] < minorColor)
-						|| (pixels[0] < minorColor && pixels[1] > majorColor && pixels[2] < minorColor)) {
-					pixels[0] = 0;
-					pixels[1] = 0;
-					pixels[2] = 0;
-				} else {
-					pixels[0] = 255;
-					pixels[1] = 255;
-					pixels[2] = 255;
-				}*/
+				 * else if ((pixels[0] > lightWhite && pixels[1] > lightWhite && pixels[2] >
+				 * lightWhite) || (pixels[0] > majorColor && pixels[1] < minorColor && pixels[2]
+				 * < minorColor) || (pixels[0] < minorColor && pixels[1] > majorColor &&
+				 * pixels[2] < minorColor)) { pixels[0] = 0; pixels[1] = 0; pixels[2] = 0; }
+				 * else { pixels[0] = 255; pixels[1] = 255; pixels[2] = 255; }
+				 */
 
 				raster.setPixel(xx, yy, pixels);
 			}
+
+			// compare Y - color
+			if (yy == 0 || prevYColors.equals(yColors)) {
+				System.out.println("Continuous Y color: " + yy);
+				continuousYCol++;
+
+//				if(continuousYCol>10) {
+//					
+//				}
+			} else {
+				if (continuousYCol > 5) {
+					System.out.println("Continue changed: " + startY + ":" + yy);
+				}
+
+				continuousYCol = 0;
+				startY = yy;
+			}
+
+			prevYColors = yColors;
 		}
 
 		return image;
