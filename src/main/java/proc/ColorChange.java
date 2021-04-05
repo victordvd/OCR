@@ -53,19 +53,9 @@ public class ColorChange {
 		Color purple = new Color(91, 0, 91);
 		Color purple2 = new Color(78, 50, 78);
 
-		int startY = 0;
-		int continuousYCol = 0;
-		List<Color> prevYColors = new ArrayList<>();
 		for (int yy = 0; yy < height; yy++) {
-			System.out.println("<<<<< y:" + yy + ">>>>>");
-			List<Color> yColors = new ArrayList<>();
-
 			for (int xx = 0; xx < width; xx++) {
 				int[] pixels = raster.getPixel(xx, yy, (int[]) null);
-
-				Color color = new Color(pixels[0], pixels[1], pixels[2]);
-				yColors.add(color);
-
 				// RGB 255~0
 				if (compareColor(pixels, grey, range) || compareColor(pixels, grey2, range)
 						|| compareColor(pixels, black, range) || compareColor(pixels, purple, range)
@@ -89,24 +79,58 @@ public class ColorChange {
 
 				raster.setPixel(xx, yy, pixels);
 			}
+		}
+		
+		image.flush();
+		raster = image.getRaster();
+		
+		// Split
+		int startY = 0;
+		int continuousYCol = 0;
+		List<Color> prevYColors = new ArrayList<>();
+		for (int yy = 0; yy < height; yy++) {
+//			System.out.println("<<<<< y:" + yy + ">>>>>");
+			List<Color> yColors = new ArrayList<>();
 
+			for (int xx = 0; xx < width; xx++) {
+				int[] pixels = raster.getPixel(xx, yy, (int[]) null);
+
+				Color color = new Color(pixels[0], pixels[1], pixels[2]);
+				yColors.add(color);
+
+			}
+
+			
+			
 			// compare Y - color
-			if (yy == 0 || prevYColors.equals(yColors)) {
-				System.out.println("Continuous Y color: " + yy);
+			if (almostWhite(yColors)) {
+//				System.out.println("Continuous Y color: " + yy);
 				continuousYCol++;
 
-//				if(continuousYCol>10) {
-//					
-//				}
 			} else {
-				if (continuousYCol > 5) {
+				
+				StringBuilder sb = new StringBuilder(yy+": ");
+				for(int x=0;x<yColors.size();x++) {
+					Color c = yColors.get(x);
+					sb.append(String.format("%d(%d,%d,%d)\t",x,c.getRed(),c.getGreen(),c.getBlue()));
+				}
+				System.out.println(sb.toString());
+				
+				if (continuousYCol > 15) {
 					System.out.println("Continue changed: " + startY + ":" + yy);
 				}
 
 				continuousYCol = 0;
 				startY = yy;
 			}
-
+			
+//			StringBuilder sb = new StringBuilder();
+//			for(int x=0;x<yColors.size();x++) {
+//				Color c = yColors.get(x);
+//				sb.append(String.format("%d(%d,%d,%d)\t",x,c.getRed(),c.getGreen(),c.getBlue()));
+//			}
+//			System.out.println(sb.toString());
+			
 			prevYColors = yColors;
 		}
 
@@ -196,5 +220,15 @@ public class ColorChange {
 				&& (color.getRed() - range <= pixels[0] && color.getGreen() - range <= pixels[1]
 						&& color.getBlue() - range <= pixels[2]));
 
+	}
+	
+	static boolean almostWhite(List<Color> colors) {
+		double cnt = 0;
+		
+		for(Color c : colors) {
+			if(Color.WHITE.equals(c))cnt++;
+		}
+		
+		return cnt/colors.size()>0.95;
 	}
 }
