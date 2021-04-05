@@ -1,3 +1,4 @@
+package proc;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -11,12 +12,12 @@ public class ColorChange {
 	public static void main(String[] args) throws Exception {
 		int width = 512;
 		int height = 512;
-		File f = new File(System.getProperty("user.dir")+"\\img\\op2.png");
+		File f = new File(Configuration.INPUT_PATH+"op2.png");
 
 		BufferedImage image = ImageIO.read(f);
 		BufferedImage image2 = replaceChar(image);
 
-		ImageIO.write(image2, "png", new File(System.getProperty("user.dir")+"\\img\\tmp.png"));
+		ImageIO.write(image2, "png", new File(Configuration.PROCESSING_PATH+"tmp.png"));
 		/*
 		 * // BufferedImage image = new BufferedImage(width, height,
 		 * BufferedImage.TYPE_4BYTE_ABGR); Graphics2D g2d = image.createGraphics();
