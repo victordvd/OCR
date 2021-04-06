@@ -1,30 +1,31 @@
 package proc;
+
 import java.awt.Graphics2D;
+
 import net.sourceforge.tess4j.*;
 import java.awt.image.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
 public class ScanedImage {
 
-
-
 	public static void main(String args[]) throws Exception {
-		File f = new File(Configuration.PROCESSING_PATH + "tmp.png");
-
-		BufferedImage ipimage = ImageIO.read(f);
-
-		// getting RGB content of the whole image file
-		double d = ipimage.getRGB(ipimage.getTileWidth() / 2, ipimage.getTileHeight() / 2);
-
-		// comparing the values
-		// and setting new scaling values
-		// that are later on used by RescaleOP
-		processImg(ipimage, 3f, -10f);
-
+		process();
+		/*
+		 * File f = new File(Configuration.PROCESSING_PATH + "tmp.png");
+		 * 
+		 * BufferedImage ipimage = ImageIO.read(f);
+		 * 
+		 * // getting RGB content of the whole image file double d =
+		 * ipimage.getRGB(ipimage.getTileWidth() / 2, ipimage.getTileHeight() / 2);
+		 * 
+		 * // comparing the values // and setting new scaling values // that are later
+		 * on used by RescaleOP processImg(ipimage, 3f, -10f);
+		 */
 		/*
 		 * if (d >= -1.4211511E7 && d < -7254228) { processImg(ipimage, 3f, -10f); }
 		 * else if (d >= -7254228 && d < -2171170) { processImg(ipimage, 1.455f, -47f);
@@ -33,6 +34,25 @@ public class ScanedImage {
 		 * else if (d >= -257 && d < -1) { processImg(ipimage, 1f, 0.5f); } else if (d
 		 * >= -1 && d < 2) { processImg(ipimage, 1f, 0.35f); }
 		 */
+	}
+
+	private static void process() throws IOException, TesseractException {
+		BufferedImage image = ImageIO.read(new File(Configuration.INPUT_PATH + "op.png"));
+		List<BufferedImage> colImgs = ColorChange.replaceChar(image);
+		Tesseract it = new Tesseract();
+
+		it.setDatapath(Configuration.TESSDATA_PATH);
+
+		for (int i =0;i< colImgs.size();i++) {
+			System.out.println("\nColumn: " + i);
+			BufferedImage img = colImgs.get(i);
+
+			String str = it.doOCR(img).replace(" ", "");
+
+			str = str.replace("\n", ", ");
+			System.out.print(str);
+		}
+
 	}
 
 	private static void processImg(BufferedImage ipimage, float scaleFactor, float offset)
@@ -89,14 +109,12 @@ public class ScanedImage {
 		// and storing result in string str
 //		String str = it.doOCR(fopimage);
 		String str = it.doOCR(ipimage);
-		
+
 		System.out.println(str);
-		
+
 		StringRecongizer.parseString(str);
-		
+
 //		Files.write(Paths.get(Configuration.OUTPUT_PATH+"tmp.csv"), str.getBytes());
-		
-		
-	
+
 	}
 }

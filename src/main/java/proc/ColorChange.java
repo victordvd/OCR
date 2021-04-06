@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,12 +17,10 @@ public class ColorChange {
 	public static void main(String[] args) throws Exception {
 		int width = 512;
 		int height = 512;
-		File f = new File(Configuration.INPUT_PATH + "op.png");
+		BufferedImage image = ImageIO.read(new File(Configuration.INPUT_PATH + "op.png"));
+		replaceChar(image);
 
-		BufferedImage image = ImageIO.read(f);
-		BufferedImage image2 = replaceChar(image);
 
-		ImageIO.write(image2, "png", new File(Configuration.PROCESSING_PATH + "tmp.png"));
 		/*
 		 * // BufferedImage image = new BufferedImage(width, height,
 		 * BufferedImage.TYPE_4BYTE_ABGR); Graphics2D g2d = image.createGraphics();
@@ -35,7 +34,7 @@ public class ColorChange {
 		 */
 	}
 
-	private static BufferedImage replaceChar(BufferedImage image) {
+	static List<BufferedImage> replaceChar(BufferedImage image) throws IOException {
 		int width = image.getWidth();
 		int height = image.getHeight();
 		System.out.printf("W: %d, H: %d%n", width, height);
@@ -85,14 +84,18 @@ public class ColorChange {
 		raster = image.getRaster();
 		
 		// Split
-		int startY = 0;
+		int startX = 0;
 		int continuousYCol = 0;
 		List<Color> prevYColors = new ArrayList<>();
-		for (int yy = 0; yy < height; yy++) {
-//			System.out.println("<<<<< y:" + yy + ">>>>>");
+		
+		List<int[]> whiteXranges = new ArrayList<int[]>();
+		for (int xx = 0; xx < width; xx++) {
 			List<Color> yColors = new ArrayList<>();
+			for (int yy = 0; yy < height; yy++) {
+//			System.out.println("<<<<< y:" + yy + ">>>>>");
+		
 
-			for (int xx = 0; xx < width; xx++) {
+			
 				int[] pixels = raster.getPixel(xx, yy, (int[]) null);
 
 				Color color = new Color(pixels[0], pixels[1], pixels[2]);
@@ -109,19 +112,20 @@ public class ColorChange {
 
 			} else {
 				
-				StringBuilder sb = new StringBuilder(yy+": ");
-				for(int x=0;x<yColors.size();x++) {
-					Color c = yColors.get(x);
-					sb.append(String.format("%d(%d,%d,%d)\t",x,c.getRed(),c.getGreen(),c.getBlue()));
-				}
-				System.out.println(sb.toString());
+//				StringBuilder sb = new StringBuilder(xx+": ");
+//				for(int y=0;y<yColors.size();y++) {
+//					Color c = yColors.get(y);
+//					sb.append(String.format("%d(%d,%d,%d)\t",y,c.getRed(),c.getGreen(),c.getBlue()));
+//				}
+//				System.out.println(sb.toString());
 				
-				if (continuousYCol > 15) {
-					System.out.println("Continue changed: " + startY + ":" + yy);
+				if (continuousYCol > 10) {
+					System.out.println("Continue changed: " + startX + ":" + xx);
+					whiteXranges.add(new int[]{startX,xx});
 				}
 
 				continuousYCol = 0;
-				startY = yy;
+				startX = xx;
 			}
 			
 //			StringBuilder sb = new StringBuilder();
@@ -133,8 +137,29 @@ public class ColorChange {
 			
 			prevYColors = yColors;
 		}
+		
+		if (continuousYCol > 10) {
+			System.out.println("Continue changed: " + startX + ":" + width);
+			whiteXranges.add(new int[]{startX,width});
+		}
+		
+		
+		List<BufferedImage> subImgs = new ArrayList<BufferedImage>();
+		
+		int valIdx = 0;
+		for(int i = 1;i<whiteXranges.size();i++) {
+			int sx = whiteXranges.get(i-1)[1];
+			int ex = whiteXranges.get(i)[0];
+			
+			BufferedImage subImg = image.getSubimage(sx, 0, ex-sx+1, height);
+			subImgs.add(subImg);
+//			ImageIO.write(subImg,"png",new File(Configuration.PROCESSING_PATH+"sub-"+(valIdx++)+".png"));
+		}
+		
+		ImageIO.write(image, "png", new File(Configuration.PROCESSING_PATH + "tmp.png"));
+		
+		return subImgs;
 
-		return image;
 	}
 
 	private static BufferedImage replaceBackground(BufferedImage image) {
@@ -229,6 +254,6 @@ public class ColorChange {
 			if(Color.WHITE.equals(c))cnt++;
 		}
 		
-		return cnt/colors.size()>0.95;
+		return cnt/colors.size()>0.99;
 	}
 }
