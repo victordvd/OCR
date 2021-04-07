@@ -7,11 +7,15 @@ import java.awt.image.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
 public class ScanedImage {
+
+	static Tesseract it = new Tesseract();
 
 	public static void main(String args[]) throws Exception {
 		process();
@@ -39,21 +43,68 @@ public class ScanedImage {
 	private static void process() throws IOException, TesseractException {
 		BufferedImage image = ImageIO.read(new File(Configuration.INPUT_PATH + "op.png"));
 		List<BufferedImage> colImgs = ColorChange.replaceChar(image);
-		Tesseract it = new Tesseract();
 
 		it.setDatapath(Configuration.TESSDATA_PATH);
 
-		for (int i =0;i< colImgs.size();i++) {
-			System.out.println("\nColumn: " + i);
-			BufferedImage img = colImgs.get(i);
+		int strikeIdx = 5;
+		int callBidIdx = 0;
+		int callAskIdx = 1;
+		int putBidIdx = 6;
+		int putAskIdx = 7;
 
-			String str = it.doOCR(img).replace(" ", "");
+		List<String> strikeStrs = splitColumnString(colImgs.get(strikeIdx));
+		List<String> callBidStrs = splitColumnString(colImgs.get(callBidIdx));
+		List<String> callAskStrs = splitColumnString(colImgs.get(callAskIdx));
 
-			str = str.replace("\n", ", ");
-			System.out.print(str);
+		List<Integer> strikes = parseStrike(strikeStrs);
+		List<Double> callBids = parsePrices(callBidStrs);
+		List<Double> callAsks = parsePrices(callAskStrs);
+		
+		for(int i = 0;i<strikes.size();i++) {
+			
+			System.out.printf("%.1f\t%.1f\t%d\t%n",callBids.get(i),callAsks.get(i),strikes.get(i));
+			
 		}
-
+		
 	}
+
+	static List<String> splitColumnString(BufferedImage img) throws TesseractException {
+		String str = it.doOCR(img).replace(" ", "");
+
+		System.out.print(str);
+
+		return Arrays.asList(str.split("\n"));
+	}
+
+	static List<Integer> parseStrike(List<String> strikes) {
+		List<Integer> ps = new ArrayList<Integer>();
+		for (int i = 0; i < strikes.size(); i++) {
+			String s = strikes.get(i);
+
+			Integer strike = Integer.valueOf(s);
+			ps.add(strike);
+		}
+		return ps;
+	}
+	
+	static List<Double> parsePrices(List<String> prices) {
+		List<Double> ps = new ArrayList<Double>();
+		for (int i = 0; i < prices.size(); i++) {
+			String p = prices.get(i);
+			
+			p =p.replace(",",".");
+			
+			if(!p.contains(".")) {
+				p = p.substring(0,p.length()-1)+"."+p.substring(p.length()-1,p.length());
+			}
+
+			Double pd = Double.valueOf(p);
+			ps.add(pd);
+		}
+		return ps;
+	}
+
+
 
 	private static void processImg(BufferedImage ipimage, float scaleFactor, float offset)
 			throws IOException, TesseractException {
