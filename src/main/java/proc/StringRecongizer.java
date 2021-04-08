@@ -25,18 +25,10 @@ public class StringRecongizer {
 
 			TxoContract call = new TxoContract();
 			call.type = TxoContract.OptionType.Call;
-			call.ask = parserDouble(values, 0);
-			call.bid = parserDouble(values, 1);
-			call.price = parserDouble(values, 2);
-			call.strike = parserInt(values, 5);
 			ops.add(call);
 
 			TxoContract put = new TxoContract();
 			put.type = TxoContract.OptionType.Put;
-			put.strike = parserInt(values, 5);
-			put.ask = parserDouble(values, 6);
-			put.bid = parserDouble(values, 7);
-			put.price = parserDouble(values, 8);
 			ops.add(put);
 		}
 
