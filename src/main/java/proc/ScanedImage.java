@@ -18,6 +18,9 @@ import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+
 public class ScanedImage {
 
 	static Tesseract it = new Tesseract();
@@ -64,12 +67,14 @@ public class ScanedImage {
 		List<String> putAskStrs = splitColumnString(colImgs.get(putAskIdx));
 
 		List<Double> strikes = parseStrike(strikeStrs);
+		System.out.println("Parsing call bid");
 		List<Double> callBids = parsePrices(callBidStrs);
+		System.out.println("Parsing call ask");
 		List<Double> callAsks = parsePrices(callAskStrs);
+		System.out.println("Parsing put bid");
 		List<Double> putBids = parsePrices(putBidStrs);
+		System.out.println("Parsing put ask");
 		List<Double> putAsks = parsePrices(putAskStrs);
-
-		double spot = 16926D;
 
 		LinkedHashMap<Double, TxoContract[]> m = new LinkedHashMap<>();
 
@@ -83,28 +88,48 @@ public class ScanedImage {
 			TxoContract call = new TxoContract(TxoContract.OptionType.Call, strike, callBids.get(i), callAsks.get(i));
 			TxoContract put = new TxoContract(TxoContract.OptionType.Put, strike, putBids.get(i), putAsks.get(i));
 
-			
 			m.put(strike, new TxoContract[] { call, put });
 		}
 
+		System.out.println();
+		
+		calculateProfit(m);
+
+	}
+
+	static void calculateProfit(LinkedHashMap<Double, TxoContract[]> m) {
+		double spot = 16926D;
+		
+		TxoContract.LS lsLimit = TxoContract.LS.Long;
+		Double lossLimit = 200D; 
+		
+		
 		for (Entry<Double, TxoContract[]> e : m.entrySet()) {
 			Double strike = e.getKey();
 			TxoContract call = e.getValue()[0];
 			TxoContract put = e.getValue()[1];
-			
+
 			Profit lcp = call.getProfit(TxoContract.LS.Long, spot);
 			Profit scp = call.getProfit(TxoContract.LS.Short, spot);
 			Profit lpp = put.getProfit(TxoContract.LS.Long, spot);
 			Profit spp = put.getProfit(TxoContract.LS.Short, spot);
 
-			System.out.printf("%.0fC L %s%n",strike,lcp.toString());
-			System.out.printf("%.0fC S %s%n",strike,scp.toString());
-			System.out.printf("%.0fP L %s%n",strike,lpp.toString());
-			System.out.printf("%.0fP S %s%n",strike,spp.toString());
+			if(TxoContract.LS.Long==lsLimit) {
+				System.out.printf("%.0fC L %s%n", strike, lcp.toString());
+				System.out.printf("%.0fP L %s%n", strike, lpp.toString());
+			}else if(TxoContract.LS.Short==lsLimit) {
+				System.out.printf("%.0fC S %s%n", strike, scp.toString());
+				System.out.printf("%.0fP S %s%n", strike, spp.toString());
+			}else {	
+				System.out.printf("%.0fC L %s%n", strike, lcp.toString());
+				System.out.printf("%.0fC S %s%n", strike, scp.toString());
+				System.out.printf("%.0fP L %s%n", strike, lpp.toString());
+				System.out.printf("%.0fP S %s%n", strike, spp.toString());
+			}
 		}
-
+		
 	}
-
+	
 	static List<String> splitColumnString(BufferedImage img) throws TesseractException {
 		String str = it.doOCR(img).replace(" ", "");
 
@@ -152,14 +177,22 @@ public class ScanedImage {
 		for (int i = 0; i < prices.size(); i++) {
 			String p = prices.get(i);
 
-			p = p.replace(",", ".");
+			p = p.replace(",", ".").replace("§", "5").replace("£", "6");
 
-			if (!p.contains(".")) {
+			if (!p.contains(".") && p.length() > 1) {
 				p = p.substring(0, p.length() - 1) + "." + p.substring(p.length() - 1, p.length());
 			}
 
-			Double pd = Double.valueOf(p);
-			ps.add(pd);
+			if (NumberUtils.isParsable(p)) {
+				Double pd = Double.valueOf(p);
+				ps.add(pd);
+//				System.out.printf("[%d] %s%n",i,p);
+			}else if(StringUtils.isBlank(p)) {
+				System.out.printf("[%d] %s(blank)%n",i,p);
+			}else{
+				System.out.printf("[%d] %s(fail)%n",i,p);
+				ps.add(0D);
+			}
 		}
 		return ps;
 	}
