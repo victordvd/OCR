@@ -8,6 +8,7 @@ import vo.TxoContract;
 
 import java.awt.image.*;
 import java.io.*;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -77,6 +78,7 @@ public class ScanedImage {
 		List<Double> putAsks = parsePrices(putAskStrs);
 
 		LinkedHashMap<Double, TxoContract[]> m = new LinkedHashMap<>();
+		List<TxoContract> contracts = new ArrayList<>();
 
 		System.out.printf("C bid\tC ask\tStrike\tP bid\tP ask%n");
 		for (int i = 0; i < strikes.size(); i++) {
@@ -89,21 +91,37 @@ public class ScanedImage {
 			TxoContract put = new TxoContract(TxoContract.OptionType.Put, strike, putBids.get(i), putAsks.get(i));
 
 			m.put(strike, new TxoContract[] { call, put });
+			
+			contracts.add(call);
+			contracts.add(put);
 		}
 
 		System.out.println();
 		
-		calculateProfit(m);
+		calculateProfit(contracts,m);
 
 	}
 
-	static void calculateProfit(LinkedHashMap<Double, TxoContract[]> m) {
+	static void calculateProfit(List<TxoContract> contracts, LinkedHashMap<Double, TxoContract[]> m) {
 		double spot = 16926D;
 		
 		TxoContract.LS lsLimit = TxoContract.LS.Long;
-		Double lossLimit = 200D; 
+		BigDecimal minCurrentProfit = new BigDecimal(-50);
+		BigDecimal minProfit = new BigDecimal(20); 
+		BigDecimal maxLoss = new BigDecimal(200); 
 		
+		contracts.stream().map(c->c.getProfit(lsLimit, spot))
+		.filter(p->p.getMaxLoss().compareTo(maxLoss)<0)
+		.filter(p->p.getMaxProfit().compareTo(minProfit)>0)
+		.filter(p->p.getProfit().compareTo(minCurrentProfit)>0)
+		.sorted((p1,p2)->p1.getContract().strike.compareTo(p2.getContract().strike))
+		.forEach(p->{
+			TxoContract c = p.getContract();
+			System.out.printf("%.0f%s %s %s%n", c.strike,c.type,p.getLs(), p.toString());
+			});
 		
+
+		/*
 		for (Entry<Double, TxoContract[]> e : m.entrySet()) {
 			Double strike = e.getKey();
 			TxoContract call = e.getValue()[0];
@@ -126,7 +144,7 @@ public class ScanedImage {
 				System.out.printf("%.0fP L %s%n", strike, lpp.toString());
 				System.out.printf("%.0fP S %s%n", strike, spp.toString());
 			}
-		}
+		}*/
 		
 	}
 	

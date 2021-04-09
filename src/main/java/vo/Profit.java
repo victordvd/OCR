@@ -3,12 +3,29 @@ package vo;
 import java.math.BigDecimal;
 
 public class Profit {
+	
+	private TxoContract contract;
+	private TxoContract.LS ls;
 	private BigDecimal profit;
 	private BigDecimal maxProfit;
 	private BigDecimal maxLoss;
 	
 	
 	
+	public Profit(TxoContract contract, TxoContract.LS ls ) {
+		super();
+		this.contract = contract;
+		this.ls = ls;
+	}
+	public TxoContract getContract() {
+		return contract;
+	}
+
+	
+	
+	public TxoContract.LS getLs() {
+		return ls;
+	}
 	public BigDecimal getProfit() {
 		return profit;
 	}

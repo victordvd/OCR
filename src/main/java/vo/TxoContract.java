@@ -47,7 +47,7 @@ public class TxoContract {
 	public Profit getProfit(LS ls, double spotPrice) {
 		BigDecimal spot = new BigDecimal(spotPrice);
 		BigDecimal infi = new BigDecimal("9999");
-		Profit p = new Profit();
+		Profit p = new Profit(this,ls);
 		if (OptionType.Call == this.type) {
 			if (LS.Long == ls) {
 				p.setMaxProfit(infi);
