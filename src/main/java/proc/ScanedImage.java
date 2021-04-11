@@ -26,6 +26,13 @@ public class ScanedImage {
 
 	static Tesseract it = new Tesseract();
 
+	// Strategy Conditions
+	static double spot = 16926D;	
+	static TxoContract.LS lsLimit = TxoContract.LS.Long;
+	static BigDecimal minCurrentProfit = new BigDecimal(-50);
+	static BigDecimal minProfit = new BigDecimal(20); 
+	static BigDecimal maxLoss = new BigDecimal(200); 
+	
 	public static void main(String args[]) throws Exception {
 		process();
 		/*
@@ -103,12 +110,6 @@ public class ScanedImage {
 	}
 
 	static void calculateProfit(List<TxoContract> contracts, LinkedHashMap<Double, TxoContract[]> m) {
-		double spot = 16926D;
-		
-		TxoContract.LS lsLimit = TxoContract.LS.Long;
-		BigDecimal minCurrentProfit = new BigDecimal(-50);
-		BigDecimal minProfit = new BigDecimal(20); 
-		BigDecimal maxLoss = new BigDecimal(200); 
 		
 		contracts.stream().map(c->c.getProfit(lsLimit, spot))
 		.filter(p->p.getMaxLoss().compareTo(maxLoss)<0)
