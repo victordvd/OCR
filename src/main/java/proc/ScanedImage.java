@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import net.sourceforge.tess4j.*;
 import vo.Profit;
 import vo.TxoContract;
+import vo.TxoContract.OptionType;
 
 import java.awt.image.*;
 import java.io.*;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
@@ -27,11 +29,16 @@ public class ScanedImage {
 	static Tesseract it = new Tesseract();
 
 	// Strategy Conditions
-	static double spot = 16926D;	
-	static TxoContract.LS lsLimit = TxoContract.LS.Long;
-	static BigDecimal minCurrentProfit = new BigDecimal(-50);
+	static double spot = 16926D;
+	static BigDecimal maxDiff = new BigDecimal(-50);
 	static BigDecimal minProfit = new BigDecimal(20); 
 	static BigDecimal maxLoss = new BigDecimal(200); 
+
+	static Integer maxMargin = 50000;
+	static int tickPrise = 50;
+	
+	static TxoContract.LS lsLimit = TxoContract.LS.Long;
+
 	
 	public static void main(String args[]) throws Exception {
 		process();
@@ -110,19 +117,36 @@ public class ScanedImage {
 	}
 
 	static void calculateProfit(List<TxoContract> contracts, LinkedHashMap<Double, TxoContract[]> m) {
-		
+		// single position
 		contracts.stream().map(c->c.getProfit(lsLimit, spot))
 		.filter(p->p.getMaxLoss().compareTo(maxLoss)<0)
 		.filter(p->p.getMaxProfit().compareTo(minProfit)>0)
-		.filter(p->p.getProfit().compareTo(minCurrentProfit)>0)
+		.filter(p->p.getProfit().compareTo(maxDiff)>0)
 		.sorted((p1,p2)->p1.getContract().strike.compareTo(p2.getContract().strike))
 		.forEach(p->{
 			TxoContract c = p.getContract();
 			System.out.printf("%.0f%s %s %s%n", c.strike,c.type,p.getLs(), p.toString());
 			});
 		
-
-		/*
+		
+		// multi-positions
+		List<TxoContract> callContracts = contracts.stream().filter(c->c.getType()==OptionType.Call)
+		.sorted((c1,c2)->c1.getStrike().compareTo(c2.getStrike())).collect(Collectors.toList());
+		
+		
+		for(int i = 0; i<callContracts.size()-1;i++) {
+			TxoContract c1 = callContracts.get(i);
+			for(int j = i+1;j<callContracts.size();j++) {
+				TxoContract c2 = callContracts.get(j);
+				
+				BigDecimal premium = c1.getAsk().subtract(c2.getBid());
+				
+//				if()
+				
+			}
+		}
+		
+		/* all
 		for (Entry<Double, TxoContract[]> e : m.entrySet()) {
 			Double strike = e.getKey();
 			TxoContract call = e.getValue()[0];

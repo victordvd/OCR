@@ -76,4 +76,70 @@ public class TxoContract {
 		return p;
 	}
 
+	public OptionType getType() {
+		return type;
+	}
+
+	public void setType(OptionType type) {
+		this.type = type;
+	}
+
+	public BigDecimal getStrike() {
+		return strike;
+	}
+
+	public void setStrike(BigDecimal strike) {
+		this.strike = strike;
+	}
+
+	public BigDecimal getBid() {
+		return bid;
+	}
+
+	public void setBid(BigDecimal bid) {
+		this.bid = bid;
+	}
+
+	public BigDecimal getAsk() {
+		return ask;
+	}
+
+	public void setAsk(BigDecimal ask) {
+		this.ask = ask;
+	}
+
+	public BigDecimal getMaxLoss() {
+		return maxLoss;
+	}
+
+	public void setMaxLoss(BigDecimal maxLoss) {
+		this.maxLoss = maxLoss;
+	}
+
+	public BigDecimal getMaxProfit() {
+		return maxProfit;
+	}
+
+	public void setMaxProfit(BigDecimal maxProfit) {
+		this.maxProfit = maxProfit;
+	}
+
+	public BigDecimal getProfit() {
+		return profit;
+	}
+
+	public void setProfit(BigDecimal profit) {
+		this.profit = profit;
+	}
+
+	public BigDecimal getDefaultLoss() {
+		return defaultLoss;
+	}
+
+	public void setDefaultLoss(BigDecimal defaultLoss) {
+		this.defaultLoss = defaultLoss;
+	}
+	
+	
+
 }
