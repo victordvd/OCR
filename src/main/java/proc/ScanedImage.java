@@ -38,6 +38,8 @@ public class ScanedImage {
 	static int tickPrise = 50;
 	
 	static TxoContract.LS lsLimit = TxoContract.LS.Long;
+	
+	static int defaultLoss = 2;
 
 	
 	public static void main(String args[]) throws Exception {
@@ -139,9 +141,10 @@ public class ScanedImage {
 			for(int j = i+1;j<callContracts.size();j++) {
 				TxoContract c2 = callContracts.get(j);
 				
+				// 
 				BigDecimal premium = c1.getAsk().subtract(c2.getBid());
 				
-//				if()
+				BigDecimal maxLoss = premium.subtract(new BigDecimal(defaultLoss*2));
 				
 			}
 		}
