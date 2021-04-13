@@ -30,16 +30,16 @@ public class ScanedImage {
 
 	// Strategy Conditions
 	static double spot = 16926D;
-	static BigDecimal maxDiff = new BigDecimal(-50);
-	static BigDecimal minProfit = new BigDecimal(20); 
-	static BigDecimal maxLoss = new BigDecimal(200); 
+	static BigDecimal g_maxDiff = new BigDecimal(-50);
+	static BigDecimal g_minProfit = new BigDecimal(20); 
+	static BigDecimal g_maxLoss = new BigDecimal(200); 
 
-	static Integer maxMargin = 50000;
+	static Integer g_maxMargin = 50000;
 	static int tickPrise = 50;
 	
 	static TxoContract.LS lsLimit = TxoContract.LS.Long;
 	
-	static int defaultLoss = 2;
+	static int defaultPositionLoss = 2;
 
 	
 	public static void main(String args[]) throws Exception {
@@ -121,9 +121,9 @@ public class ScanedImage {
 	static void calculateProfit(List<TxoContract> contracts, LinkedHashMap<Double, TxoContract[]> m) {
 		// single position
 		contracts.stream().map(c->c.getProfit(lsLimit, spot))
-		.filter(p->p.getMaxLoss().compareTo(maxLoss)<0)
-		.filter(p->p.getMaxProfit().compareTo(minProfit)>0)
-		.filter(p->p.getProfit().compareTo(maxDiff)>0)
+		.filter(p->p.getMaxLoss().compareTo(g_maxLoss)<0)
+		.filter(p->p.getMaxProfit().compareTo(g_minProfit)>0)
+		.filter(p->p.getProfit().compareTo(g_maxDiff)>0)
 		.sorted((p1,p2)->p1.getContract().strike.compareTo(p2.getContract().strike))
 		.forEach(p->{
 			TxoContract c = p.getContract();
@@ -135,17 +135,33 @@ public class ScanedImage {
 		List<TxoContract> callContracts = contracts.stream().filter(c->c.getType()==OptionType.Call)
 		.sorted((c1,c2)->c1.getStrike().compareTo(c2.getStrike())).collect(Collectors.toList());
 		
+		BigDecimal spotVd = BigDecimal.valueOf(spot);
+		
+		TxoContract longPosition;
+		TxoContract shortPosition;
+		
+		BigDecimal finalPremium;
+		BigDecimal finalMaxLoss;
+		BigDecimal finalMaxProfit;
+		BigDecimal finalProfit;
 		
 		for(int i = 0; i<callContracts.size()-1;i++) {
 			TxoContract c1 = callContracts.get(i);
+	
 			for(int j = i+1;j<callContracts.size();j++) {
 				TxoContract c2 = callContracts.get(j);
 				
-				// 
 				BigDecimal premium = c1.getAsk().subtract(c2.getBid());
 				
-				BigDecimal maxLoss = premium.subtract(new BigDecimal(defaultLoss*2));
+				BigDecimal maxLoss = premium.subtract(new BigDecimal(defaultPositionLoss*2));
+
 				
+				BigDecimal profit = spotVd.subtract(c1.strike).subtract(premium).max(maxLoss);
+
+				
+				BigDecimal maxProfit = c2.strike.subtract(c1.strike).subtract(premium);
+				
+//				if()
 			}
 		}
 		
