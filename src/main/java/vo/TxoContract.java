@@ -2,14 +2,12 @@ package vo;
 
 import java.math.BigDecimal;
 
+import vo.Position.LS;
+
 public class TxoContract {
 
 	public enum OptionType {
 		Call, Put
-	}
-
-	public enum LS {
-		Long, Short
 	}
 
 	public OptionType type;
@@ -48,6 +46,7 @@ public class TxoContract {
 		BigDecimal spot = new BigDecimal(spotPrice);
 		BigDecimal infi = new BigDecimal("9999");
 		Profit p = new Profit(this,ls);
+//		Profit p = new Profit();
 		if (OptionType.Call == this.type) {
 			if (LS.Long == ls) {
 				p.setMaxProfit(infi);

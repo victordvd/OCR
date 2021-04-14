@@ -34,7 +34,7 @@ public class ColorChange {
 		 */
 	}
 
-	static List<BufferedImage> replaceChar(BufferedImage image) throws IOException {
+	public static List<BufferedImage> replaceChar(BufferedImage image) throws IOException {
 		int width = image.getWidth();
 		int height = image.getHeight();
 		System.out.printf("W: %d, H: %d%n", width, height);
