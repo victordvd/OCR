@@ -24,11 +24,11 @@ public class StringRecongizer {
 			String[] values = line.split("\\s+");
 
 			TxoContract call = new TxoContract();
-			call.type = TxoContract.OptionType.Call;
+			call.type = TxoContract.OptionType.C;
 			ops.add(call);
 
 			TxoContract put = new TxoContract();
-			put.type = TxoContract.OptionType.Put;
+			put.type = TxoContract.OptionType.P;
 			ops.add(put);
 		}
 

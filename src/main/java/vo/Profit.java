@@ -5,31 +5,36 @@ import vo.Position.LS;
 
 public class Profit {
 	
-	private TxoContract contract;
-	private LS ls;
-	private BigDecimal profit;
-	private BigDecimal maxProfit;
-	private BigDecimal maxLoss;
+//	private TxoContract contract;
+//	private LS ls;
+	private BigDecimal profit = BigDecimal.ZERO;
+	private BigDecimal maxProfit = BigDecimal.ZERO;
+	private BigDecimal maxLoss = BigDecimal.ZERO;
 	
-	public Profit(TxoContract contract, LS ls ) {
-		super();
-		this.contract = contract;
-		this.ls = ls;
-	}
+	public Profit() {}
+	
+//	public Profit(TxoContract contract, LS ls ) {
+//		super();
+//		this.contract = contract;
+//		this.ls = ls;
+//	}
 
 	public Profit merge(Profit o) {
 		
+		this.profit.add(o.profit);
+		this.maxProfit.add(o.maxProfit);
+		this.maxLoss.add(o.maxLoss);
 		
 		return this;
 	}
 	
-	public TxoContract getContract() {
-		return contract;
-	}
-
-	public LS getLs() {
-		return ls;
-	}
+//	public TxoContract getContract() {
+//		return contract;
+//	}
+//
+//	public LS getLs() {
+//		return ls;
+//	}
 	public BigDecimal getProfit() {
 		return profit;
 	}
@@ -50,7 +55,7 @@ public class Profit {
 	}
 	@Override
 	public String toString() {
-		return String.format("[profit: % 7.1f\tmax: % 7.1f\tmin: % 7.1f",  profit,maxProfit,maxLoss);
+		return String.format("[profit: % 7.1f\tmax: % 7.1f\tmin: % 7.1f]",  profit,maxProfit,maxLoss);
 	}
 	
 	

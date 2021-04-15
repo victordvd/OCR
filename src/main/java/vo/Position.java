@@ -2,7 +2,7 @@ package vo;
 
 public class Position {
 	public static enum LS {
-		Long, Short
+		L, S
 	}
 	
 	private LS ls;
@@ -19,6 +19,19 @@ public class Position {
 
 	public TxoContract getContract() {
 		return contract;
+	}
+
+	public void setLs(LS ls) {
+		this.ls = ls;
+	}
+
+	public void setContract(TxoContract contract) {
+		this.contract = contract;
+	}
+
+	@Override
+	public String toString() {
+		return ls + " " + contract.getStrike()+contract.getType();
 	}
 	
 	

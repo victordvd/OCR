@@ -2,7 +2,14 @@ package vo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import vo.Position.LS;
+import vo.TxoContract.OptionType;
 
 public class Strategy {
 	
@@ -20,5 +27,38 @@ public class Strategy {
 		this.positions = positions;
 	}
 
+	public Profit getProfit(double spotPrice){
+		Profit profit = new Profit();
+		
+		Map<OptionType, List<Position>> m = positions.stream().collect(Collectors.groupingBy(p->p.getContract().getType()));
+		
+		
+		for (Entry<OptionType, List<Position>> e: m.entrySet()) {
+			OptionType type = e.getKey();
+			List<Position> poss = e.getValue();
+			
+		
+			List<Position> lPoss = poss.stream().filter(p->LS.L == p.getLs()).collect(Collectors.toList());
+			List<Position> sPoss = poss.stream().filter(p->LS.S == p.getLs()).collect(Collectors.toList());
+			
+			if(OptionType.C == type) {
+				
+				for(Position lPos:lPoss) {
+					
+					
+				}
+				
+				
+			}else {
+				
+			}
+		}
+		
+	
+		
+		
+		
+		return profit;
+	}
 	
 }

@@ -7,7 +7,7 @@ import vo.Position.LS;
 public class TxoContract {
 
 	public enum OptionType {
-		Call, Put
+		C, P
 	}
 
 	public OptionType type;
@@ -45,10 +45,10 @@ public class TxoContract {
 	public Profit getProfit(LS ls, double spotPrice) {
 		BigDecimal spot = new BigDecimal(spotPrice);
 		BigDecimal infi = new BigDecimal("9999");
-		Profit p = new Profit(this,ls);
-//		Profit p = new Profit();
-		if (OptionType.Call == this.type) {
-			if (LS.Long == ls) {
+//		Profit p = new Profit(this,ls);
+		Profit p = new Profit();
+		if (OptionType.C == this.type) {
+			if (LS.L == ls) {
 				p.setMaxProfit(infi);
 				p.setMaxLoss(ask.negate().subtract(defaultLoss));
 				p.setProfit(spot.subtract(ask).subtract(strike).subtract(defaultLoss));
@@ -60,7 +60,7 @@ public class TxoContract {
 				p.setProfit(p.getProfit().min(p.getMaxProfit()));
 			}
 		} else {
-			if (LS.Long == ls) {
+			if (LS.L == ls) {
 				p.setMaxProfit(infi);
 				p.setMaxLoss(ask.negate().subtract(defaultLoss));
 				p.setProfit(strike.subtract(spot).subtract(ask).subtract(defaultLoss));

@@ -1,27 +1,18 @@
 package proc;
 
 import java.awt.Graphics2D;
-import vo.Position.LS;
-
 import net.sourceforge.tess4j.*;
-import vo.Profit;
-import vo.Strategy;
+import vo.Position.LS;
 import vo.TxoContract;
-import vo.TxoContract.OptionType;
 
 import java.awt.image.*;
 import java.io.*;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
-import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -39,7 +30,7 @@ public class ScanedImage {
 	static Integer g_maxMargin = 50000;
 	static int tickPrise = 50;
 
-	static LS lsLimit = LS.Long;
+	static LS lsLimit = LS.L;
 
 	static int defaultPositionLoss = 2;
 
@@ -101,8 +92,8 @@ public class ScanedImage {
 
 			Double strike = strikes.get(i);
 
-			TxoContract call = new TxoContract(TxoContract.OptionType.Call, strike, callBids.get(i), callAsks.get(i));
-			TxoContract put = new TxoContract(TxoContract.OptionType.Put, strike, putBids.get(i), putAsks.get(i));
+			TxoContract call = new TxoContract(TxoContract.OptionType.C, strike, callBids.get(i), callAsks.get(i));
+			TxoContract put = new TxoContract(TxoContract.OptionType.P, strike, putBids.get(i), putAsks.get(i));
 
 			m.put(strike, new TxoContract[] { call, put });
 
