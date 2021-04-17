@@ -3,6 +3,7 @@ package vo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,8 +39,8 @@ public class Strategy {
 			List<Position> poss = e.getValue();
 			
 		
-			List<Position> lPoss = poss.stream().filter(p->LS.L == p.getLs()).collect(Collectors.toList());
-			List<Position> sPoss = poss.stream().filter(p->LS.S == p.getLs()).collect(Collectors.toList());
+			List<Position> lPoss = poss.stream().filter(p->LS.L == p.getLs()).collect(Collectors.toCollection(LinkedList::new));
+			List<Position> sPoss = poss.stream().filter(p->LS.S == p.getLs()).collect(Collectors.toCollection(LinkedList::new));
 			
 			if(OptionType.C == type) {
 				

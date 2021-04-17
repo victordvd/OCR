@@ -55,7 +55,7 @@ public class Profit {
 	}
 	@Override
 	public String toString() {
-		return String.format("[profit: % 7.1f\tmax: % 7.1f\tmin: % 7.1f]",  profit,maxProfit,maxLoss);
+		return String.format("[profit: % 7.1f\tmaxProfit: % 7.1f\tmaxLoss: % 7.1f]",  profit,maxProfit,maxLoss);
 	}
 	
 	

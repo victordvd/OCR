@@ -16,10 +16,10 @@ import vo.TxoContract.OptionType;
 public class StrategyAnalyzer {
 	
 	// Strategy Conditions
-	static double spot = 16350D;
-	static BigDecimal g_minCurrentProfitLimit = new BigDecimal(-200);
-	static BigDecimal g_minProfitLimit = new BigDecimal(20);
-	static BigDecimal g_maxLossLimit = new BigDecimal(200);
+	static double spot = 17150D;
+	static BigDecimal g_minSpreadLimit = new BigDecimal(-100);
+	static BigDecimal g_minProfitLimit = new BigDecimal(150);
+	static BigDecimal g_maxLossLimit = new BigDecimal(100);
 
 	static Integer g_maxMargin = 50000;
 	static int tickPrise = 50;
@@ -55,21 +55,23 @@ public class StrategyAnalyzer {
 		for (int i = 0; i < callContracts.size() - 1; i++) {
 			TxoContract c1 = callContracts.get(i);
 			Position pos1 =  new Position(LS.L,c1);
+			pos1.setPremium(c1.ask);
 			Profit p1 = getProfit(pos1,spot);
 			
-			System.out.println(pos1+" "+p1);
+//			System.out.println(pos1+" "+p1);
 			
 			for (int j = i + 1; j < callContracts.size(); j++) {
 				TxoContract c2 = callContracts.get(j);	
 				Position pos2 = new Position(LS.S,c2);
 				Profit p2 = getProfit(pos2 ,spot);
-				System.out.println(pos2+" "+p2);
+//				System.out.print(pos2+" "+p2+" ");
 				
 				Profit p = mergeProfit_CDF(pos1, pos2);
-				System.out.println(p);
+//				System.out.println(p);
 				if (matchProfitCondition(p)) {
 					strats.add(new Strategy(new Position(LS.L,c1),new Position(LS.S,c2)));
-					System.out.println("bingo");
+//					System.out.println("bingo");
+					System.out.printf("L/S %dC/%dC  %s%n",pos1.getContract().getStrike().intValue(),pos2.getContract().getStrike().intValue(),p);
 				}
 			}
 		}
@@ -147,17 +149,19 @@ public class StrategyAnalyzer {
 		
 		BigDecimal strikeDiff =  pos2.getContract().getStrike().subtract(pos1.getContract().getStrike());
 		
+		BigDecimal premium = pos1.getContract().getAsk().subtract( pos2.getContract().getBid());
+		
 		p.setProfit(p1.getProfit().add(p2.getProfit()));
-		p.setMaxProfit( p1.getProfit().subtract(p2.getProfit()));
-		p.setMaxLoss( p1.getProfit().subtract(p2.getProfit()));
+		p.setMaxProfit( strikeDiff.subtract(premium));
+		p.setMaxLoss( premium);
 		
 		return p;
 	}
 	
 	private static boolean matchProfitCondition(Profit p) {
 		if ((g_minProfitLimit == null || g_minProfitLimit.compareTo(p.getMaxProfit()) < 0)
-				&& (g_maxLossLimit == null || g_maxLossLimit.compareTo(p.getMaxLoss()) < 0)
-				&& (g_minCurrentProfitLimit == null || g_minCurrentProfitLimit.compareTo(p.getProfit()) < 0)) {
+				&& (g_maxLossLimit == null || g_maxLossLimit.compareTo(p.getMaxLoss()) > 0)
+				&& (g_minSpreadLimit == null || g_minSpreadLimit.compareTo(p.getProfit()) < 0)) {
 			return true;
 		}
 		return false;

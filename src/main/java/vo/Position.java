@@ -1,5 +1,7 @@
 package vo;
 
+import java.math.BigDecimal;
+
 public class Position {
 	public static enum LS {
 		L, S
@@ -7,6 +9,9 @@ public class Position {
 	
 	private LS ls;
 	private TxoContract contract;
+	private BigDecimal premium;
+
+	private BigDecimal margin;
 	
 	public Position(LS ls, TxoContract contract) {
 		this.ls = ls;
@@ -27,6 +32,24 @@ public class Position {
 
 	public void setContract(TxoContract contract) {
 		this.contract = contract;
+	}
+
+	
+	
+	public BigDecimal getPremium() {
+		return premium;
+	}
+
+	public void setPremium(BigDecimal premium) {
+		this.premium = premium;
+	}
+
+	public BigDecimal getMargin() {
+		return margin;
+	}
+
+	public void setMargin(BigDecimal margin) {
+		this.margin = margin;
 	}
 
 	@Override
