@@ -66,7 +66,7 @@ public class StrategyAnalyzer {
 				Profit p2 = getProfit(pos2 ,spot);
 //				System.out.print(pos2+" "+p2+" ");
 				
-				Profit p = mergeProfit_CDF(pos1, pos2);
+				Profit p = mergeProfit_spread(pos1, pos2);
 //				System.out.println(p);
 				if (matchProfitCondition(p)) {
 					strats.add(new Strategy(new Position(LS.L,c1),new Position(LS.S,c2)));
@@ -142,13 +142,12 @@ public class StrategyAnalyzer {
 		return p;
 	}
 	
-	public static Profit mergeProfit_CDF(Position pos1 ,Position pos2) {
+	public static Profit mergeProfit_spread(Position pos1 ,Position pos2) {
 		Profit p = new Profit();
 		Profit p1 = getProfit(pos1,spot);
 		Profit p2 = getProfit(pos2,spot);
 		
 		BigDecimal strikeDiff =  pos2.getContract().getStrike().subtract(pos1.getContract().getStrike());
-		
 		BigDecimal premium = pos1.getContract().getAsk().subtract( pos2.getContract().getBid());
 		
 		p.setProfit(p1.getProfit().add(p2.getProfit()));

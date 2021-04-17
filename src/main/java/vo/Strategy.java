@@ -15,6 +15,10 @@ import vo.TxoContract.OptionType;
 public class Strategy {
 	
 	private List<Position> positions = new ArrayList<>();
+	
+	Position bearPos;
+	Position bullPos;
+	
 
 	public Strategy(Position... positions) {
 		this.positions= new ArrayList<>(Arrays.asList(positions));

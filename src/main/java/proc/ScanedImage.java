@@ -87,7 +87,7 @@ public class ScanedImage {
 
 		System.out.printf("C bid\tC ask\tStrike\tP bid\tP ask%n");
 		for (int i = 0; i < strikes.size(); i++) {
-			System.out.printf("%.1f\t%.1f\t%.0f\t%.1f\t%.1f%n", callBids.get(i), callAsks.get(i), strikes.get(i),
+			System.out.printf("%.1f\t%.1f\t[%.0f]\t%.1f\t%.1f%n", callBids.get(i), callAsks.get(i), strikes.get(i),
 					putBids.get(i), putAsks.get(i));
 
 			Double strike = strikes.get(i);
