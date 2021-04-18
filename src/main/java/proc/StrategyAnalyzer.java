@@ -19,24 +19,29 @@ public class StrategyAnalyzer {
 	static BigDecimal g_minSpreadLimit = new BigDecimal(-100);
 	static BigDecimal g_minProfitLimit = new BigDecimal(150);
 	static BigDecimal g_maxLossLimit = new BigDecimal(100);
-
 	static Integer g_maxMargin = 50000;
-	static int tickPrise = 50;
 
-	static LS lsLimit = LS.L;
+	static BigDecimal g_defaultPositionLoss = BigDecimal.valueOf(1);
 
-	static BigDecimal defaultPositionLoss = BigDecimal.valueOf(2);
+	static BigDecimal g_spreadShortPriceLimit = BigDecimal.valueOf(8);
+
+//	static int tickPrise = 50;
+//	static LS lsLimit = LS.L;
 
 	public static void calculateProfit(List<OptionContract> contracts) {
 		// single position
-//		contracts.stream().map(c -> c.getProfit(lsLimit, spot))
-//				.filter(p -> p.getMaxLoss().compareTo(g_maxLossLimit) < 0)
-//				.filter(p -> p.getMaxProfit().compareTo(g_minProfitLimit) > 0)
-//				.filter(p -> p.getProfit().compareTo(g_minCurrentProfitLimit) > 0)
-//				.sorted((p1, p2) -> p1.getContract().strike.compareTo(p2.getContract().strike)).forEach(p -> {
-//					TxoContract c = p.getContract();
-//					System.out.printf("%.0f%s %s %s%n", c.strike, c.type, p.getLs(), p.toString());
-//				});
+		System.out.println("Single position");
+
+		contracts.stream()
+				.filter(c -> StrategyAnalyzer
+						.matchProfitCondition(new Position(Position.LS.L, c).getProfit(spot, g_defaultPositionLoss)))
+				.sorted((c1, c2) -> c1.strike.compareTo(c2.strike)).forEach(c -> {
+					Profit p = new Position(Position.LS.L, c).getProfit(spot, g_defaultPositionLoss);
+					System.out.printf("[L]%.0f%s %s%n", c.strike, c.type, p.toString());
+				});
+
+		System.out.println();
+		System.out.println("Multiple position");
 
 		// Contract for difference
 		List<VerticalSpreadStrategy> vss = new ArrayList<>();
@@ -57,13 +62,18 @@ public class StrategyAnalyzer {
 
 			for (int j = i + 1; j < callContracts.size(); j++) {
 				OptionContract c2 = callContracts.get(j);
+
+				if (c2.getAsk().compareTo(g_spreadShortPriceLimit) <= 0)
+					continue;
+
 				Position pos2 = new Position(LS.S, c2);
+
 				Profit p2 = getProfit(pos2, spot);
 //				System.out.print(pos2+" "+p2+" ");
 
 				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.L, c1), new Position(LS.S, c2));
 //				Profit p = mergeProfit_spread(pos1, pos2);
-				Profit p = vs.getProfit(spot, defaultPositionLoss);
+				Profit p = vs.getProfit(spot, g_defaultPositionLoss);
 
 //				System.out.println(p);
 				if (matchProfitCondition(p)) {
@@ -87,9 +97,11 @@ public class StrategyAnalyzer {
 
 			for (int j = i + 1; j < putContracts.size(); j++) {
 				OptionContract c2 = putContracts.get(j);
+				if (c2.getAsk().compareTo(g_spreadShortPriceLimit) <= 0)
+					continue;
 
 				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.L, c1), new Position(LS.S, c2));
-				Profit p = vs.getProfit(spot, defaultPositionLoss);
+				Profit p = vs.getProfit(spot, g_defaultPositionLoss);
 
 				if (matchProfitCondition(p)) {
 					vss.add(vs);
@@ -134,25 +146,25 @@ public class StrategyAnalyzer {
 		if (OptionType.C == contract.type) {
 			if (LS.L == ls) {
 				p.setMaxProfit(infi);
-				p.setMaxLoss(contract.ask.negate().subtract(defaultPositionLoss));
-				p.setProfit(spot.subtract(contract.ask).subtract(contract.strike).subtract(defaultPositionLoss));
+				p.setMaxLoss(contract.ask.negate().subtract(g_defaultPositionLoss));
+				p.setProfit(spot.subtract(contract.ask).subtract(contract.strike).subtract(g_defaultPositionLoss));
 				p.setProfit(p.getProfit().min(p.getMaxProfit()));
 			} else {
-				p.setMaxProfit(contract.bid.subtract(defaultPositionLoss));
+				p.setMaxProfit(contract.bid.subtract(g_defaultPositionLoss));
 				p.setMaxLoss(infi.negate());
-				p.setProfit(contract.bid.subtract(spot.subtract(contract.strike)).subtract(defaultPositionLoss));
+				p.setProfit(contract.bid.subtract(spot.subtract(contract.strike)).subtract(g_defaultPositionLoss));
 				p.setProfit(p.getProfit().min(p.getMaxProfit()));
 			}
 		} else {
 			if (LS.L == ls) {
 				p.setMaxProfit(infi);
-				p.setMaxLoss(contract.ask.negate().subtract(defaultPositionLoss));
-				p.setProfit(contract.strike.subtract(spot).subtract(contract.ask).subtract(defaultPositionLoss));
+				p.setMaxLoss(contract.ask.negate().subtract(g_defaultPositionLoss));
+				p.setProfit(contract.strike.subtract(spot).subtract(contract.ask).subtract(g_defaultPositionLoss));
 				p.setProfit(p.getProfit().min(p.getMaxProfit()));
 			} else {
-				p.setMaxProfit(contract.bid.subtract(defaultPositionLoss));
+				p.setMaxProfit(contract.bid.subtract(g_defaultPositionLoss));
 				p.setMaxLoss(infi.negate());
-				p.setProfit(contract.bid.subtract(contract.strike.subtract(spot)).subtract(defaultPositionLoss));
+				p.setProfit(contract.bid.subtract(contract.strike.subtract(spot)).subtract(g_defaultPositionLoss));
 				p.setProfit(p.getProfit().min(p.getMaxProfit()));
 			}
 		}

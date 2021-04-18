@@ -67,8 +67,8 @@ public class VerticalSpreadStrategy {
 
 	@Override
 	public String toString() {
-		return String.format("L %s%s/S %s%s", lPos.getContract().getStrike().intValue(), sPos.getContract().getType(),
-				sPos.getContract().getStrike().intValue(), sPos.getContract().getType());
+		return String.format("[L]%s/[S]%s %s", lPos.getContract().getStrike().intValue(),
+				sPos.getContract().getStrike().intValue(), cp);
 	}
 
 }

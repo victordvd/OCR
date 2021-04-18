@@ -40,24 +40,24 @@ public class Position {
 		if (OptionType.C == contract.type) {
 			if (LS.L == ls) {
 				p.setMaxProfit(infi);
-				p.setMaxLoss(contract.ask.negate().subtract(defaultLoss));
+				p.setMaxLoss(price.add(defaultLoss));
 				p.setProfit(spot.subtract(contract.ask).subtract(contract.strike).subtract(defaultLoss));
 				p.setProfit(p.getProfit().min(p.getMaxProfit()));
 			} else {
 				p.setMaxProfit(contract.bid.subtract(defaultLoss));
-				p.setMaxLoss(infi.negate());
+				p.setMaxLoss(infi);
 				p.setProfit(contract.bid.subtract(spot.subtract(contract.strike)).subtract(defaultLoss));
 				p.setProfit(p.getProfit().min(p.getMaxProfit()));
 			}
 		} else {
 			if (LS.L == ls) {
 				p.setMaxProfit(infi);
-				p.setMaxLoss(contract.ask.negate().subtract(defaultLoss));
+				p.setMaxLoss(price.add(defaultLoss));
 				p.setProfit(contract.strike.subtract(spot).subtract(contract.ask).subtract(defaultLoss));
 				p.setProfit(p.getProfit().min(p.getMaxProfit()));
 			} else {
 				p.setMaxProfit(contract.bid.subtract(defaultLoss));
-				p.setMaxLoss(infi.negate());
+				p.setMaxLoss(infi);
 				p.setProfit(contract.bid.subtract(contract.strike.subtract(spot)).subtract(defaultLoss));
 				p.setProfit(p.getProfit().min(p.getMaxProfit()));
 			}
