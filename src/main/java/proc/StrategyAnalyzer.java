@@ -2,21 +2,20 @@ package proc;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import vo.Strategy;
-import vo.TxoContract;
+import vo.OptionContract;
+import vo.OptionContract.OptionType;
 import vo.Position;
-import vo.Profit;
 import vo.Position.LS;
-import vo.TxoContract.OptionType;
+import vo.Profit;
+import vo.VerticalSpreadStrategy;
 
 public class StrategyAnalyzer {
-	
+
 	// Strategy Conditions
-	static double spot = 17150D;
+	static BigDecimal spot = BigDecimal.valueOf(17150);
 	static BigDecimal g_minSpreadLimit = new BigDecimal(-100);
 	static BigDecimal g_minProfitLimit = new BigDecimal(150);
 	static BigDecimal g_maxLossLimit = new BigDecimal(100);
@@ -26,9 +25,9 @@ public class StrategyAnalyzer {
 
 	static LS lsLimit = LS.L;
 
-	static int defaultPositionLoss = 2;
+	static BigDecimal defaultPositionLoss = BigDecimal.valueOf(2);
 
-	public static void calculateProfit(List<TxoContract> contracts) {
+	public static void calculateProfit(List<OptionContract> contracts) {
 		// single position
 //		contracts.stream().map(c -> c.getProfit(lsLimit, spot))
 //				.filter(p -> p.getMaxLoss().compareTo(g_maxLossLimit) < 0)
@@ -40,48 +39,68 @@ public class StrategyAnalyzer {
 //				});
 
 		// Contract for difference
-		List<Strategy> strats = new ArrayList<>();
+		List<VerticalSpreadStrategy> vss = new ArrayList<>();
 
-		List<TxoContract> callContracts = contracts.stream().filter(c -> c.getType() == OptionType.C)
+		// Call VS
+		List<OptionContract> callContracts = contracts.stream().filter(c -> c.getType() == OptionType.C)
 				.sorted((c1, c2) -> c1.getStrike().compareTo(c2.getStrike())).collect(Collectors.toList());
-
-		BigDecimal spotVd = BigDecimal.valueOf(spot);
-
-		TxoContract longPosition;
-		TxoContract shortPosition;
 
 		Profit lastProfit = null;
 
 		for (int i = 0; i < callContracts.size() - 1; i++) {
-			TxoContract c1 = callContracts.get(i);
-			Position pos1 =  new Position(LS.L,c1);
+			OptionContract c1 = callContracts.get(i);
+			Position pos1 = new Position(LS.L, c1);
 			pos1.setPremium(c1.ask);
-			Profit p1 = getProfit(pos1,spot);
-			
+			Profit p1 = getProfit(pos1, spot);
+
 //			System.out.println(pos1+" "+p1);
-			
+
 			for (int j = i + 1; j < callContracts.size(); j++) {
-				TxoContract c2 = callContracts.get(j);	
-				Position pos2 = new Position(LS.S,c2);
-				Profit p2 = getProfit(pos2 ,spot);
+				OptionContract c2 = callContracts.get(j);
+				Position pos2 = new Position(LS.S, c2);
+				Profit p2 = getProfit(pos2, spot);
 //				System.out.print(pos2+" "+p2+" ");
-				
-				Profit p = mergeProfit_spread(pos1, pos2);
+
+				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.L, c1), new Position(LS.S, c2));
+//				Profit p = mergeProfit_spread(pos1, pos2);
+				Profit p = vs.getProfit(spot, defaultPositionLoss);
+
 //				System.out.println(p);
 				if (matchProfitCondition(p)) {
-					strats.add(new Strategy(new Position(LS.L,c1),new Position(LS.S,c2)));
-//					System.out.println("bingo");
-					System.out.printf("L/S %dC/%dC  %s%n",pos1.getContract().getStrike().intValue(),pos2.getContract().getStrike().intValue(),p);
+					vss.add(vs);
+					System.out.println(vs + " " + p);
+//					System.out.printf("L/S %dC/%dC  %s%n", pos1.getContract().getStrike().intValue(),
+//							pos2.getContract().getStrike().intValue(), p);
 				}
 			}
 		}
-		
-		// Print CFD strategies
-		strats.forEach(s->{
-				Profit total = new Profit();
-				for(Position pos :s.getPositions()) {
-					total.merge(getProfit(pos, spot));
+		System.out.println();
+
+		// Call VS
+		List<OptionContract> putContracts = contracts.stream().filter(c -> c.getType() == OptionType.P)
+				.sorted((c1, c2) -> c2.getStrike().compareTo(c1.getStrike())).collect(Collectors.toList());
+
+		for (int i = 0; i < putContracts.size() - 1; i++) {
+			OptionContract c1 = putContracts.get(i);
+			Position pos1 = new Position(LS.L, c1);
+			pos1.setPremium(c1.ask);
+
+			for (int j = i + 1; j < putContracts.size(); j++) {
+				OptionContract c2 = putContracts.get(j);
+
+				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.L, c1), new Position(LS.S, c2));
+				Profit p = vs.getProfit(spot, defaultPositionLoss);
+
+				if (matchProfitCondition(p)) {
+					vss.add(vs);
+					System.out.println(vs + " " + p);
 				}
+			}
+		}
+
+		// Print VS strategies
+		vss.forEach(s -> {
+
 		});
 
 		/*
@@ -105,58 +124,56 @@ public class StrategyAnalyzer {
 		 */
 
 	}
-	
-	public static Profit getProfit(Position position, double spotPrice) {
+
+	public static Profit getProfit(Position position, BigDecimal spot) {
 		LS ls = position.getLs();
-		TxoContract contract = position.getContract();
-		BigDecimal defaultLoss = new BigDecimal(defaultPositionLoss);
-		BigDecimal spot = new BigDecimal(spotPrice);
+		OptionContract contract = position.getContract();
 		BigDecimal infi = new BigDecimal("9999");
 		Profit p = new Profit();
 //		Profit p = new Profit(contract,ls);
 		if (OptionType.C == contract.type) {
 			if (LS.L == ls) {
 				p.setMaxProfit(infi);
-				p.setMaxLoss(contract.ask.negate().subtract(defaultLoss));
-				p.setProfit(spot.subtract(contract.ask).subtract(contract.strike).subtract(defaultLoss));
+				p.setMaxLoss(contract.ask.negate().subtract(defaultPositionLoss));
+				p.setProfit(spot.subtract(contract.ask).subtract(contract.strike).subtract(defaultPositionLoss));
 				p.setProfit(p.getProfit().min(p.getMaxProfit()));
 			} else {
-				p.setMaxProfit(contract.bid.subtract(defaultLoss));
+				p.setMaxProfit(contract.bid.subtract(defaultPositionLoss));
 				p.setMaxLoss(infi.negate());
-				p.setProfit(contract.bid.subtract(spot.subtract(contract.strike)).subtract(defaultLoss));
+				p.setProfit(contract.bid.subtract(spot.subtract(contract.strike)).subtract(defaultPositionLoss));
 				p.setProfit(p.getProfit().min(p.getMaxProfit()));
 			}
 		} else {
 			if (LS.L == ls) {
 				p.setMaxProfit(infi);
-				p.setMaxLoss(contract.ask.negate().subtract(defaultLoss));
-				p.setProfit(contract.strike.subtract(spot).subtract(contract.ask).subtract(defaultLoss));
+				p.setMaxLoss(contract.ask.negate().subtract(defaultPositionLoss));
+				p.setProfit(contract.strike.subtract(spot).subtract(contract.ask).subtract(defaultPositionLoss));
 				p.setProfit(p.getProfit().min(p.getMaxProfit()));
 			} else {
-				p.setMaxProfit(contract.bid.subtract(defaultLoss));
+				p.setMaxProfit(contract.bid.subtract(defaultPositionLoss));
 				p.setMaxLoss(infi.negate());
-				p.setProfit(contract.bid.subtract(contract.strike.subtract(spot)).subtract(defaultLoss));
+				p.setProfit(contract.bid.subtract(contract.strike.subtract(spot)).subtract(defaultPositionLoss));
 				p.setProfit(p.getProfit().min(p.getMaxProfit()));
 			}
 		}
 		return p;
 	}
-	
-	public static Profit mergeProfit_spread(Position pos1 ,Position pos2) {
+
+	public static Profit mergeProfit_spread(Position pos1, Position pos2) {
 		Profit p = new Profit();
-		Profit p1 = getProfit(pos1,spot);
-		Profit p2 = getProfit(pos2,spot);
-		
-		BigDecimal strikeDiff =  pos2.getContract().getStrike().subtract(pos1.getContract().getStrike());
-		BigDecimal premium = pos1.getContract().getAsk().subtract( pos2.getContract().getBid());
-		
+		Profit p1 = getProfit(pos1, spot);
+		Profit p2 = getProfit(pos2, spot);
+
+		BigDecimal strikeDiff = pos2.getContract().getStrike().subtract(pos1.getContract().getStrike());
+		BigDecimal premium = pos1.getContract().getAsk().subtract(pos2.getContract().getBid());
+
 		p.setProfit(p1.getProfit().add(p2.getProfit()));
-		p.setMaxProfit( strikeDiff.subtract(premium));
-		p.setMaxLoss( premium);
-		
+		p.setMaxProfit(strikeDiff.subtract(premium));
+		p.setMaxLoss(premium);
+
 		return p;
 	}
-	
+
 	private static boolean matchProfitCondition(Profit p) {
 		if ((g_minProfitLimit == null || g_minProfitLimit.compareTo(p.getMaxProfit()) < 0)
 				&& (g_maxLossLimit == null || g_maxLossLimit.compareTo(p.getMaxLoss()) > 0)

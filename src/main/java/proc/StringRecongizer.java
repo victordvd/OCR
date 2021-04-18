@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import vo.TxoContract;
+import vo.OptionContract;
 
 public class StringRecongizer {
 
@@ -18,17 +18,17 @@ public class StringRecongizer {
 	public static void parseString(String str) {
 		String[] lines = str.split("\n");
 
-		List<TxoContract> ops = new ArrayList<>();
+		List<OptionContract> ops = new ArrayList<>();
 		
 		for (String line : lines) {
 			String[] values = line.split("\\s+");
 
-			TxoContract call = new TxoContract();
-			call.type = TxoContract.OptionType.C;
+			OptionContract call = new OptionContract();
+			call.type = OptionContract.OptionType.C;
 			ops.add(call);
 
-			TxoContract put = new TxoContract();
-			put.type = TxoContract.OptionType.P;
+			OptionContract put = new OptionContract();
+			put.type = OptionContract.OptionType.P;
 			ops.add(put);
 		}
 

@@ -3,7 +3,7 @@ package proc;
 import java.awt.Graphics2D;
 import net.sourceforge.tess4j.*;
 import vo.Position.LS;
-import vo.TxoContract;
+import vo.OptionContract;
 
 import java.awt.image.*;
 import java.io.*;
@@ -57,7 +57,7 @@ public class ScanedImage {
 		 */
 	}
 
-	public static List<TxoContract> process(List<BufferedImage> colImgs) throws IOException, TesseractException {
+	public static List<OptionContract> process(List<BufferedImage> colImgs) throws IOException, TesseractException {
 		it.setDatapath(Configuration.TESSDATA_PATH);
 
 		int strikeIdx = 5;
@@ -82,8 +82,8 @@ public class ScanedImage {
 		System.out.println("Parsing put ask");
 		List<Double> putAsks = parsePrices(putAskStrs);
 
-		LinkedHashMap<Double, TxoContract[]> m = new LinkedHashMap<>();
-		List<TxoContract> contracts = new ArrayList<>();
+		LinkedHashMap<Double, OptionContract[]> m = new LinkedHashMap<>();
+		List<OptionContract> contracts = new ArrayList<>();
 
 		System.out.printf("C bid\tC ask\tStrike\tP bid\tP ask%n");
 		for (int i = 0; i < strikes.size(); i++) {
@@ -92,10 +92,10 @@ public class ScanedImage {
 
 			Double strike = strikes.get(i);
 
-			TxoContract call = new TxoContract(TxoContract.OptionType.C, strike, callBids.get(i), callAsks.get(i));
-			TxoContract put = new TxoContract(TxoContract.OptionType.P, strike, putBids.get(i), putAsks.get(i));
+			OptionContract call = new OptionContract(OptionContract.OptionType.C, strike, callBids.get(i), callAsks.get(i));
+			OptionContract put = new OptionContract(OptionContract.OptionType.P, strike, putBids.get(i), putAsks.get(i));
 
-			m.put(strike, new TxoContract[] { call, put });
+			m.put(strike, new OptionContract[] { call, put });
 
 			contracts.add(call);
 			contracts.add(put);

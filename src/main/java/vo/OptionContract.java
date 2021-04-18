@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 
 import vo.Position.LS;
 
-public class TxoContract {
+public class OptionContract {
 
-	public enum OptionType {
+	public static enum OptionType {
 		C, P
 	}
 
@@ -14,18 +14,11 @@ public class TxoContract {
 	public BigDecimal strike;
 	public BigDecimal bid;
 	public BigDecimal ask;
-//	public BigDecimal price;
 
-	public BigDecimal maxLoss;
-	public BigDecimal maxProfit;
-	public BigDecimal profit;
-
-	public BigDecimal defaultLoss = BigDecimal.ONE;
-
-	public TxoContract() {
+	public OptionContract() {
 	}
 
-	public TxoContract(OptionType type, double strike, double bid, double ask) {
+	public OptionContract(OptionType type, double strike, double bid, double ask) {
 		super();
 		this.type = type;
 		this.strike = new BigDecimal(strike);
@@ -33,7 +26,7 @@ public class TxoContract {
 		this.ask = new BigDecimal(ask);
 	}
 
-	public TxoContract(OptionType type, BigDecimal strike, BigDecimal bid, BigDecimal ask) {
+	public OptionContract(OptionType type, BigDecimal strike, BigDecimal bid, BigDecimal ask) {
 		super();
 		this.type = type;
 		this.strike = strike;
@@ -43,6 +36,7 @@ public class TxoContract {
 	}
 
 	public Profit getProfit(LS ls, double spotPrice) {
+		BigDecimal defaultLoss = BigDecimal.ONE;
 		BigDecimal spot = new BigDecimal(spotPrice);
 		BigDecimal infi = new BigDecimal("9999");
 //		Profit p = new Profit(this,ls);
@@ -106,39 +100,5 @@ public class TxoContract {
 	public void setAsk(BigDecimal ask) {
 		this.ask = ask;
 	}
-
-	public BigDecimal getMaxLoss() {
-		return maxLoss;
-	}
-
-	public void setMaxLoss(BigDecimal maxLoss) {
-		this.maxLoss = maxLoss;
-	}
-
-	public BigDecimal getMaxProfit() {
-		return maxProfit;
-	}
-
-	public void setMaxProfit(BigDecimal maxProfit) {
-		this.maxProfit = maxProfit;
-	}
-
-	public BigDecimal getProfit() {
-		return profit;
-	}
-
-	public void setProfit(BigDecimal profit) {
-		this.profit = profit;
-	}
-
-	public BigDecimal getDefaultLoss() {
-		return defaultLoss;
-	}
-
-	public void setDefaultLoss(BigDecimal defaultLoss) {
-		this.defaultLoss = defaultLoss;
-	}
-	
-	
 
 }

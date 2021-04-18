@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import vo.Position.LS;
-import vo.TxoContract.OptionType;
+import vo.OptionContract.OptionType;
 
 public class Strategy {
 	

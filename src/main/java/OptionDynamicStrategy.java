@@ -10,7 +10,7 @@ import proc.ColorChange;
 import proc.Configuration;
 import proc.ScanedImage;
 import proc.StrategyAnalyzer;
-import vo.TxoContract;
+import vo.OptionContract;
 
 public class OptionDynamicStrategy {
 
@@ -24,7 +24,7 @@ public class OptionDynamicStrategy {
 		System.out.println("\nRecognize image");
 		BufferedImage image = ImageIO.read(new File(Configuration.INPUT_PATH + "op.png"));
 		List<BufferedImage> colImgs = ColorChange.replaceChar(image);
-		List<TxoContract> contracts = ScanedImage.process(colImgs) ;
+		List<OptionContract> contracts = ScanedImage.process(colImgs) ;
 
 		// 3. Analyze option informations for the most profitable option strategy
 		System.out.println("\nAnalyze strategies");
