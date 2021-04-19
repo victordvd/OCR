@@ -15,10 +15,10 @@ import vo.VerticalSpreadStrategy;
 public class StrategyAnalyzer {
 
 	// Strategy Conditions
-	static BigDecimal spot = BigDecimal.valueOf(17150);
-	static BigDecimal g_minSpreadLimit = new BigDecimal(-100);
-	static BigDecimal g_minProfitLimit = new BigDecimal(150);
-	static BigDecimal g_maxLossLimit = new BigDecimal(100);
+	static BigDecimal spot = BigDecimal.valueOf(17260);
+	static BigDecimal g_minSpreadLimit = new BigDecimal(-60);
+	static BigDecimal g_minProfitLimit = new BigDecimal(30);
+	static BigDecimal g_maxLossLimit = new BigDecimal(60);
 	static Integer g_maxMargin = 50000;
 
 	static BigDecimal g_defaultPositionLoss = BigDecimal.valueOf(1);
