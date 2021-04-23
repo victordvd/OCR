@@ -1,18 +1,18 @@
 package vo;
 
 import java.math.BigDecimal;
-import vo.Position.LS;
 
 public class Profit {
-	
+
 //	private TxoContract contract;
 //	private LS ls;
-	private BigDecimal profit = BigDecimal.ZERO;
+	private BigDecimal spread = BigDecimal.ZERO;
 	private BigDecimal maxProfit = BigDecimal.ZERO;
 	private BigDecimal maxLoss = BigDecimal.ZERO;
-	
-	public Profit() {}
-	
+
+	public Profit() {
+	}
+
 //	public Profit(TxoContract contract, LS ls ) {
 //		super();
 //		this.contract = contract;
@@ -20,14 +20,14 @@ public class Profit {
 //	}
 
 	public Profit merge(Profit o) {
-		
-		this.profit.add(o.profit);
+
+		this.spread.add(o.spread);
 		this.maxProfit.add(o.maxProfit);
 		this.maxLoss.add(o.maxLoss);
-		
+
 		return this;
 	}
-	
+
 //	public TxoContract getContract() {
 //		return contract;
 //	}
@@ -36,27 +36,32 @@ public class Profit {
 //		return ls;
 //	}
 	public BigDecimal getProfit() {
-		return profit;
+		return spread;
 	}
+
 	public void setProfit(BigDecimal profit) {
-		this.profit = profit;
+		this.spread = profit;
 	}
+
 	public BigDecimal getMaxProfit() {
 		return maxProfit;
 	}
+
 	public void setMaxProfit(BigDecimal maxProfit) {
 		this.maxProfit = maxProfit;
 	}
+
 	public BigDecimal getMaxLoss() {
 		return maxLoss;
 	}
+
 	public void setMaxLoss(BigDecimal maxLoss) {
 		this.maxLoss = maxLoss;
 	}
+
 	@Override
 	public String toString() {
-		return String.format("[profit: % 7.1f\tmaxProfit: % 7.1f\tmaxLoss: % 7.1f]",  profit,maxProfit,maxLoss);
+		return String.format("[spread: % 7.1f\tmax-profit: % 7.1f\tmax-loss: % 7.1f]", spread, maxProfit, maxLoss);
 	}
-	
-	
+
 }

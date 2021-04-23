@@ -14,19 +14,25 @@ import vo.VerticalSpreadStrategy;
 
 public class StrategyAnalyzer {
 
-	// Strategy Conditions
-	static BigDecimal spot = BigDecimal.valueOf(17260);
-	static BigDecimal g_minSpreadLimit = new BigDecimal(-60);
-	static BigDecimal g_minProfitLimit = new BigDecimal(30);
-	static BigDecimal g_maxLossLimit = new BigDecimal(60);
-	static Integer g_maxMargin = 50000;
-
+	static BigDecimal spot = BigDecimal.valueOf(17300);
 	static BigDecimal g_defaultPositionLoss = BigDecimal.valueOf(1);
 
-	static BigDecimal g_spreadShortPriceLimit = BigDecimal.valueOf(8);
+	static Integer g_maxMargin = 50000;
+
+	// Vertical Spread - IM
+	static BigDecimal g_minSpreadLimit = new BigDecimal(-150);
+	static BigDecimal g_minProfitLimit = new BigDecimal(60);
+	static BigDecimal g_maxLossLimit = new BigDecimal(80);
+	static BigDecimal g_minShortPriceLimit = BigDecimal.valueOf(8);
+
+	// Vertical Spread - OM
+	static BigDecimal spread_om_minSpreadLimit = new BigDecimal(-150);
+	static BigDecimal spread_om_minProfitLimit = new BigDecimal(60);
+	static BigDecimal spread_om_maxLossLimit = new BigDecimal(80);
+	static BigDecimal spread_om_minShortPriceLimit = BigDecimal.valueOf(8);
+	static Integer spread_om_maxMargin = 50000;
 
 //	static int tickPrise = 50;
-//	static LS lsLimit = LS.L;
 
 	public static void calculateProfit(List<OptionContract> contracts) {
 		// single position
@@ -63,7 +69,7 @@ public class StrategyAnalyzer {
 			for (int j = i + 1; j < callContracts.size(); j++) {
 				OptionContract c2 = callContracts.get(j);
 
-				if (c2.getAsk().compareTo(g_spreadShortPriceLimit) <= 0)
+				if (c2.getAsk().compareTo(g_minShortPriceLimit) <= 0)
 					continue;
 
 				Position pos2 = new Position(LS.S, c2);
@@ -97,7 +103,7 @@ public class StrategyAnalyzer {
 
 			for (int j = i + 1; j < putContracts.size(); j++) {
 				OptionContract c2 = putContracts.get(j);
-				if (c2.getAsk().compareTo(g_spreadShortPriceLimit) <= 0)
+				if (c2.getAsk().compareTo(g_minShortPriceLimit) <= 0)
 					continue;
 
 				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.L, c1), new Position(LS.S, c2));
