@@ -13,7 +13,7 @@ import vo.Profit;
 import vo.VerticalSpreadStrategy;
 
 public class StrategyAnalyzer {
-	
+
 	public static final BigDecimal TICK_PRICE = BigDecimal.valueOf(50);
 
 	static BigDecimal spot = BigDecimal.valueOf(17300);
@@ -28,13 +28,12 @@ public class StrategyAnalyzer {
 	static BigDecimal g_minShortPriceLimit = BigDecimal.valueOf(8);
 
 	// Vertical Spread - OM
-	static BigDecimal spread_om_minSpreadLimit = new BigDecimal(150);
+	static BigDecimal spread_om_minUnrealizedGainLimit = new BigDecimal(5);
+	static BigDecimal spread_om_minShortStrikeSpreadLimit = new BigDecimal(100);
 	static BigDecimal spread_om_minProfitLimit = new BigDecimal(10);
-	static BigDecimal spread_om_maxLossLimit = new BigDecimal(40);
-	static BigDecimal spread_om_minLongPriceLimit = BigDecimal.valueOf(3);
+	static BigDecimal spread_om_maxLossLimit = new BigDecimal(100);
+	static BigDecimal spread_om_minLongPriceLimit = BigDecimal.valueOf(2);
 	static BigDecimal spread_om_maxMargin = BigDecimal.valueOf(150000);
-
-
 
 	public static void calculateProfit(List<OptionContract> contracts) {
 		// single position
@@ -57,8 +56,6 @@ public class StrategyAnalyzer {
 		// Call VS
 		List<OptionContract> callContracts = contracts.stream().filter(c -> c.getType() == OptionType.C)
 				.sorted((c1, c2) -> c1.getStrike().compareTo(c2.getStrike())).collect(Collectors.toList());
-
-		Profit lastProfit = null;
 
 		for (int i = 0; i < callContracts.size() - 1; i++) {
 			OptionContract c1 = callContracts.get(i);
@@ -120,7 +117,7 @@ public class StrategyAnalyzer {
 
 		// OM spread
 		List<VerticalSpreadStrategy> vsOm = new ArrayList<>();
-		System.out.println("Out the Money Spread");
+		System.out.println("\nOut the Money Spread");
 		// Call VS
 		callContracts = contracts.stream().filter(c -> c.getType() == OptionType.C)
 				.sorted((c1, c2) -> c1.getStrike().compareTo(c2.getStrike())).collect(Collectors.toList());
@@ -134,20 +131,17 @@ public class StrategyAnalyzer {
 				if (c2.getAsk().compareTo(spread_om_minLongPriceLimit) <= 0)
 					continue;
 
-				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.S, c1), new Position(LS.L, c2));
+				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.L, c2), new Position(LS.S, c1));
 				Profit p = vs.getProfit(spot, g_defaultPositionLoss);
 
-				if (matchOmProfitCondition(p)) {
+				System.out.println(vs + " " + p);
+				if (matchOmProfitCondition(vs, p)) {
 					vsOm.add(vs);
-					System.out.println(vs + " " + p);
+//					System.out.println(vs + " " + p);
+					System.out.println("bingo");
 				}
 			}
 		}
-		
-		// Print VS strategies
-		vss.forEach(s -> {
-
-		});
 
 		/*
 		 * all for (Entry<Double, TxoContract[]> e : m.entrySet()) { Double strike =
@@ -181,25 +175,29 @@ public class StrategyAnalyzer {
 			if (LS.L == ls) {
 				p.setMaxProfit(infi);
 				p.setMaxLoss(contract.ask.negate().subtract(g_defaultPositionLoss));
-				p.setProfit(spot.subtract(contract.ask).subtract(contract.strike).subtract(g_defaultPositionLoss));
-				p.setProfit(p.getProfit().min(p.getMaxProfit()));
+				p.setUnrealizedGain(
+						spot.subtract(contract.ask).subtract(contract.strike).subtract(g_defaultPositionLoss));
+				p.setUnrealizedGain(p.getUnrealizedGain().min(p.getMaxProfit()));
 			} else {
 				p.setMaxProfit(contract.bid.subtract(g_defaultPositionLoss));
 				p.setMaxLoss(infi.negate());
-				p.setProfit(contract.bid.subtract(spot.subtract(contract.strike)).subtract(g_defaultPositionLoss));
-				p.setProfit(p.getProfit().min(p.getMaxProfit()));
+				p.setUnrealizedGain(
+						contract.bid.subtract(spot.subtract(contract.strike)).subtract(g_defaultPositionLoss));
+				p.setUnrealizedGain(p.getUnrealizedGain().min(p.getMaxProfit()));
 			}
 		} else {
 			if (LS.L == ls) {
 				p.setMaxProfit(infi);
 				p.setMaxLoss(contract.ask.negate().subtract(g_defaultPositionLoss));
-				p.setProfit(contract.strike.subtract(spot).subtract(contract.ask).subtract(g_defaultPositionLoss));
-				p.setProfit(p.getProfit().min(p.getMaxProfit()));
+				p.setUnrealizedGain(
+						contract.strike.subtract(spot).subtract(contract.ask).subtract(g_defaultPositionLoss));
+				p.setUnrealizedGain(p.getUnrealizedGain().min(p.getMaxProfit()));
 			} else {
 				p.setMaxProfit(contract.bid.subtract(g_defaultPositionLoss));
 				p.setMaxLoss(infi.negate());
-				p.setProfit(contract.bid.subtract(contract.strike.subtract(spot)).subtract(g_defaultPositionLoss));
-				p.setProfit(p.getProfit().min(p.getMaxProfit()));
+				p.setUnrealizedGain(
+						contract.bid.subtract(contract.strike.subtract(spot)).subtract(g_defaultPositionLoss));
+				p.setUnrealizedGain(p.getUnrealizedGain().min(p.getMaxProfit()));
 			}
 		}
 		return p;
@@ -213,7 +211,7 @@ public class StrategyAnalyzer {
 		BigDecimal strikeDiff = pos2.getContract().getStrike().subtract(pos1.getContract().getStrike());
 		BigDecimal premium = pos1.getContract().getAsk().subtract(pos2.getContract().getBid());
 
-		p.setProfit(p1.getProfit().add(p2.getProfit()));
+		p.setUnrealizedGain(p1.getUnrealizedGain().add(p2.getUnrealizedGain()));
 		p.setMaxProfit(strikeDiff.subtract(premium));
 		p.setMaxLoss(premium);
 
@@ -223,17 +221,22 @@ public class StrategyAnalyzer {
 	private static boolean matchProfitCondition(Profit p) {
 		if ((g_minProfitLimit == null || g_minProfitLimit.compareTo(p.getMaxProfit()) < 0)
 				&& (g_maxLossLimit == null || g_maxLossLimit.compareTo(p.getMaxLoss()) > 0)
-				&& (g_minSpreadLimit == null || g_minSpreadLimit.compareTo(p.getProfit()) < 0)) {
+				&& (g_minSpreadLimit == null || g_minSpreadLimit.compareTo(p.getUnrealizedGain()) < 0)) {
 			return true;
 		}
 		return false;
 	}
-	
-	private static boolean matchOmProfitCondition(Profit p) {
+
+	private static boolean matchOmProfitCondition(VerticalSpreadStrategy vs, Profit p) {
+		BigDecimal imStrikePriceSpread = vs.getImStrikePriceSpread(spot);
+
 		if ((spread_om_minProfitLimit == null || spread_om_minProfitLimit.compareTo(p.getMaxProfit()) < 0)
 				&& (spread_om_maxLossLimit == null || spread_om_maxLossLimit.compareTo(p.getMaxLoss()) > 0)
-				&& (spread_om_minSpreadLimit == null || spread_om_minSpreadLimit.compareTo(p.getProfit()) < 0)
-				&& (spread_om_maxMargin == null || spread_om_maxMargin.compareTo(p.getMargin()) > 0)) {
+				&& (spread_om_minShortStrikeSpreadLimit == null
+						|| spread_om_minShortStrikeSpreadLimit.compareTo(imStrikePriceSpread) <= 0)
+				&& (spread_om_maxMargin == null || spread_om_maxMargin.compareTo(p.getMargin()) >= 0)
+				&& (spread_om_minUnrealizedGainLimit == null
+						|| spread_om_minUnrealizedGainLimit.compareTo(p.getUnrealizedGain()) <= 0)) {
 			return true;
 		}
 		return false;

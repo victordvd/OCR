@@ -45,25 +45,25 @@ public class OptionContract {
 			if (LS.L == ls) {
 				p.setMaxProfit(infi);
 				p.setMaxLoss(ask.negate().subtract(defaultLoss));
-				p.setProfit(spot.subtract(ask).subtract(strike).subtract(defaultLoss));
-				p.setProfit(p.getProfit().min(p.getMaxProfit()));
+				p.setUnrealizedGain(spot.subtract(ask).subtract(strike).subtract(defaultLoss));
+				p.setUnrealizedGain(p.getUnrealizedGain().min(p.getMaxProfit()));
 			} else {
 				p.setMaxProfit(bid.subtract(defaultLoss));
 				p.setMaxLoss(infi.negate());
-				p.setProfit(bid.subtract(spot.subtract(strike)).subtract(defaultLoss));
-				p.setProfit(p.getProfit().min(p.getMaxProfit()));
+				p.setUnrealizedGain(bid.subtract(spot.subtract(strike)).subtract(defaultLoss));
+				p.setUnrealizedGain(p.getUnrealizedGain().min(p.getMaxProfit()));
 			}
 		} else {
 			if (LS.L == ls) {
 				p.setMaxProfit(infi);
 				p.setMaxLoss(ask.negate().subtract(defaultLoss));
-				p.setProfit(strike.subtract(spot).subtract(ask).subtract(defaultLoss));
-				p.setProfit(p.getProfit().min(p.getMaxProfit()));
+				p.setUnrealizedGain(strike.subtract(spot).subtract(ask).subtract(defaultLoss));
+				p.setUnrealizedGain(p.getUnrealizedGain().min(p.getMaxProfit()));
 			} else {
 				p.setMaxProfit(bid.subtract(defaultLoss));
 				p.setMaxLoss(infi.negate());
-				p.setProfit(bid.subtract(strike.subtract(spot)).subtract(defaultLoss));
-				p.setProfit(p.getProfit().min(p.getMaxProfit()));
+				p.setUnrealizedGain(bid.subtract(strike.subtract(spot)).subtract(defaultLoss));
+				p.setUnrealizedGain(p.getUnrealizedGain().min(p.getMaxProfit()));
 			}
 		}
 		return p;

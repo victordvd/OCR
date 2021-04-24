@@ -1,38 +1,23 @@
 package proc;
 
 import java.awt.Graphics2D;
-import net.sourceforge.tess4j.*;
-import vo.Position.LS;
-import vo.OptionContract;
-
-import java.awt.image.*;
-import java.io.*;
-import java.math.BigDecimal;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-public class ScanedImage {
+import net.sourceforge.tess4j.Tesseract;
+import net.sourceforge.tess4j.TesseractException;
+import vo.OptionContract;
 
-	static Tesseract it = new Tesseract();
+public class OCR {
 
-	// Strategy Conditions
-	static double spot = 16926D;
-	static BigDecimal g_minCurrentProfitLimit = new BigDecimal(-200);
-	static BigDecimal g_minProfitLimit = new BigDecimal(20);
-	static BigDecimal g_maxLossLimit = new BigDecimal(200);
-
-	static Integer g_maxMargin = 50000;
-	static int tickPrise = 50;
-
-	static LS lsLimit = LS.L;
-
-	static int defaultPositionLoss = 2;
+	private static Tesseract it = new Tesseract();
 
 	public static void main(String args[]) throws Exception {
 
@@ -92,15 +77,16 @@ public class ScanedImage {
 
 			Double strike = strikes.get(i);
 
-			OptionContract call = new OptionContract(OptionContract.OptionType.C, strike, callBids.get(i), callAsks.get(i));
-			OptionContract put = new OptionContract(OptionContract.OptionType.P, strike, putBids.get(i), putAsks.get(i));
+			OptionContract call = new OptionContract(OptionContract.OptionType.C, strike, callBids.get(i),
+					callAsks.get(i));
+			OptionContract put = new OptionContract(OptionContract.OptionType.P, strike, putBids.get(i),
+					putAsks.get(i));
 
 			m.put(strike, new OptionContract[] { call, put });
 
 			contracts.add(call);
 			contracts.add(put);
 		}
-
 
 		return contracts;
 	}
@@ -161,7 +147,7 @@ public class ScanedImage {
 			if (NumberUtils.isParsable(p)) {
 				Double pd = Double.valueOf(p);
 				ps.add(pd);
-//				System.out.printf("[%d] %s%n",i,p);
+				System.out.printf("[%d] %s%n", i, p);
 			} else if (StringUtils.isBlank(p)) {
 				System.out.printf("[%d] %s(blank)%n", i, p);
 			} else {

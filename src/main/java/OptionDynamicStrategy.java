@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 import net.sourceforge.tess4j.TesseractException;
 import proc.ColorChange;
 import proc.Configuration;
-import proc.ScanedImage;
+import proc.OCR;
 import proc.StrategyAnalyzer;
 import vo.OptionContract;
 
@@ -24,7 +24,7 @@ public class OptionDynamicStrategy {
 		System.out.println("\nRecognize image");
 		BufferedImage image = ImageIO.read(new File(Configuration.INPUT_PATH + "op.png"));
 		List<BufferedImage> colImgs = ColorChange.replaceChar(image);
-		List<OptionContract> contracts = ScanedImage.process(colImgs) ;
+		List<OptionContract> contracts = OCR.process(colImgs) ;
 
 		// 3. Analyze option informations for the most profitable option strategy
 		System.out.println("\nAnalyze strategies");
