@@ -4,21 +4,12 @@ import java.math.BigDecimal;
 
 public class Profit {
 
-//	private TxoContract contract;
-//	private LS ls;
 	private BigDecimal unrealizedGain = BigDecimal.ZERO;
 	private BigDecimal maxProfit = BigDecimal.ZERO;
 	private BigDecimal maxLoss = BigDecimal.ZERO;
-	private BigDecimal margin = BigDecimal.ZERO;
+	private BigDecimal margin;
 
-	public Profit() {
-	}
-
-//	public Profit(TxoContract contract, LS ls ) {
-//		super();
-//		this.contract = contract;
-//		this.ls = ls;
-//	}
+	public Profit() {}
 
 	public Profit merge(Profit o) {
 
@@ -78,8 +69,9 @@ public class Profit {
 
 	@Override
 	public String toString() {
-		return String.format("[Unreal-gain: % 7.1f\tmax-profit: % 7.1f\tmax-loss: % 7.1f]", unrealizedGain, maxProfit,
-				maxLoss);
+		String marginStr = (margin==null)?"NA":margin.setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+		return String.format("[Unreal-gain: % 7.1f\tmax-profit: % 7.1f\tmax-loss: % 7.1f\tmargin: %s]", unrealizedGain, maxProfit,
+				maxLoss,marginStr);
 	}
 
 }

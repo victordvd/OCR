@@ -86,8 +86,8 @@ public class VerticalSpreadStrategy {
 //			System.out.println("S " + sProfit.getUnrealizedGain() + ", L " + lProfit.getUnrealizedGain());
 
 			profit.setUnrealizedGain(sProfit.getUnrealizedGain().add(lProfit.getUnrealizedGain()));
-			profit.setMaxProfit(priceDiff.add(defaultLoss.multiply(BigDecimal.valueOf(2))));
-			profit.setMaxLoss(strikeDiff.subtract(priceDiff).subtract(defaultLoss.multiply(BigDecimal.valueOf(2))));
+			profit.setMaxProfit(priceDiff.subtract(defaultLoss.multiply(BigDecimal.valueOf(2))));
+			profit.setMaxLoss(strikeDiff.subtract(priceDiff).add(defaultLoss.multiply(BigDecimal.valueOf(2))));
 			break;
 		}
 

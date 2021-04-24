@@ -33,7 +33,7 @@ public class StrategyAnalyzer {
 	static BigDecimal spread_om_minProfitLimit = new BigDecimal(10);
 	static BigDecimal spread_om_maxLossLimit = new BigDecimal(100);
 	static BigDecimal spread_om_minLongPriceLimit = BigDecimal.valueOf(2);
-	static BigDecimal spread_om_maxMargin = BigDecimal.valueOf(150000);
+	static BigDecimal spread_om_maxMargin = BigDecimal.valueOf(15000);
 
 	public static void calculateProfit(List<OptionContract> contracts) {
 		// single position
@@ -118,10 +118,7 @@ public class StrategyAnalyzer {
 		// OM spread
 		List<VerticalSpreadStrategy> vsOm = new ArrayList<>();
 		System.out.println("\nOut the Money Spread");
-		// Call VS
-		callContracts = contracts.stream().filter(c -> c.getType() == OptionType.C)
-				.sorted((c1, c2) -> c1.getStrike().compareTo(c2.getStrike())).collect(Collectors.toList());
-
+		// Bear Call Spread
 		for (int i = 0; i < callContracts.size() - 1; i++) {
 			OptionContract c1 = callContracts.get(i);
 
@@ -134,11 +131,33 @@ public class StrategyAnalyzer {
 				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.L, c2), new Position(LS.S, c1));
 				Profit p = vs.getProfit(spot, g_defaultPositionLoss);
 
-				System.out.println(vs + " " + p);
+//				System.out.println(vs + " " + p);
 				if (matchOmProfitCondition(vs, p)) {
 					vsOm.add(vs);
-//					System.out.println(vs + " " + p);
-					System.out.println("bingo");
+					System.out.println(vs + " " + p);
+//					System.out.println("bingo");
+				}
+			}
+		}
+		System.out.println();
+		// Bull Put Spread
+		for (int i = 0; i < putContracts.size() - 1; i++) {
+			OptionContract c1 = putContracts.get(i);
+
+			for (int j = i + 1; j < putContracts.size(); j++) {
+				OptionContract c2 = putContracts.get(j);
+
+				if (c2.getAsk().compareTo(spread_om_minLongPriceLimit) <= 0)
+					continue;
+
+				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.L, c2), new Position(LS.S, c1));
+				Profit p = vs.getProfit(spot, g_defaultPositionLoss);
+
+//				System.out.println(vs + " " + p);
+				if (matchOmProfitCondition(vs, p)) {
+					vsOm.add(vs);
+					System.out.println(vs + " " + p);
+//					System.out.println("bingo");
 				}
 			}
 		}
