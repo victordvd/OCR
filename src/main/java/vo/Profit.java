@@ -9,6 +9,7 @@ public class Profit {
 	private BigDecimal spread = BigDecimal.ZERO;
 	private BigDecimal maxProfit = BigDecimal.ZERO;
 	private BigDecimal maxLoss = BigDecimal.ZERO;
+	private BigDecimal margin = BigDecimal.ZERO;
 
 	public Profit() {
 	}
@@ -57,6 +58,24 @@ public class Profit {
 
 	public void setMaxLoss(BigDecimal maxLoss) {
 		this.maxLoss = maxLoss;
+	}
+
+	
+	
+	public BigDecimal getSpread() {
+		return spread;
+	}
+
+	public void setSpread(BigDecimal spread) {
+		this.spread = spread;
+	}
+
+	public BigDecimal getMargin() {
+		return margin;
+	}
+
+	public void setMargin(BigDecimal margin) {
+		this.margin = margin;
 	}
 
 	@Override

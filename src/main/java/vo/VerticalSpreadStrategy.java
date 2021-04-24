@@ -2,6 +2,8 @@ package vo;
 
 import java.math.BigDecimal;
 
+import proc.StrategyAnalyzer;
+
 public class VerticalSpreadStrategy {
 
 	private OptionContract.OptionType cp;
@@ -29,21 +31,24 @@ public class VerticalSpreadStrategy {
 
 		boolean isLongPrimary = (cp == OptionContract.OptionType.C) ? lStrike.compareTo(sStrike) < 0
 				: lStrike.compareTo(sStrike) > 0;
-
+				
+				BigDecimal strikeDiff = sPos.getContract().getStrike().subtract(lPos.getContract().getStrike()).abs();
+				
+				
+				Profit lProfit = lPos.getProfit(spot, defaultLoss);
+				Profit sProfit = sPos.getProfit(spot, defaultLoss);
+				BigDecimal priceDiff = lPos.getPrice().subtract(sPos.getPrice()).abs();
 		if (isLongPrimary) {
-			Profit lProfit = lPos.getProfit(spot, defaultLoss);
-			Profit sProfit = sPos.getProfit(spot, defaultLoss);
-
-			BigDecimal strikeDiff = sPos.getContract().getStrike().subtract(lPos.getContract().getStrike()).abs();
-
-			BigDecimal premium = lPos.getPrice().subtract(sPos.getPrice());
-
+		
 			profit.setProfit(sProfit.getProfit().add(lProfit.getProfit()));
-			profit.setMaxProfit(strikeDiff.subtract(premium).subtract(defaultLoss.multiply(BigDecimal.valueOf(2))));
-			profit.setMaxLoss(premium.add(defaultLoss.multiply(BigDecimal.valueOf(2))));
-		} else {
-			// bear spread to-do
-
+			profit.setMaxProfit(strikeDiff.subtract(priceDiff).subtract(defaultLoss.multiply(BigDecimal.valueOf(2))));
+			profit.setMaxLoss(priceDiff.add(defaultLoss.multiply(BigDecimal.valueOf(2))));
+		} else {// bear spread
+			profit.setMargin(strikeDiff.multiply(StrategyAnalyzer.TICK_PRICE));
+			
+			profit.setProfit(sProfit.getProfit().add(lProfit.getProfit()));
+			profit.setMaxProfit(priceDiff.add(defaultLoss.multiply(BigDecimal.valueOf(2))));
+			profit.setMaxLoss(strikeDiff.subtract(priceDiff).subtract(defaultLoss.multiply(BigDecimal.valueOf(2))));
 		}
 
 		return profit;

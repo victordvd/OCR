@@ -13,6 +13,8 @@ import vo.Profit;
 import vo.VerticalSpreadStrategy;
 
 public class StrategyAnalyzer {
+	
+	public static final BigDecimal TICK_PRICE = BigDecimal.valueOf(50);
 
 	static BigDecimal spot = BigDecimal.valueOf(17300);
 	static BigDecimal g_defaultPositionLoss = BigDecimal.valueOf(1);
@@ -26,13 +28,13 @@ public class StrategyAnalyzer {
 	static BigDecimal g_minShortPriceLimit = BigDecimal.valueOf(8);
 
 	// Vertical Spread - OM
-	static BigDecimal spread_om_minSpreadLimit = new BigDecimal(-150);
-	static BigDecimal spread_om_minProfitLimit = new BigDecimal(60);
-	static BigDecimal spread_om_maxLossLimit = new BigDecimal(80);
-	static BigDecimal spread_om_minShortPriceLimit = BigDecimal.valueOf(8);
-	static Integer spread_om_maxMargin = 50000;
+	static BigDecimal spread_om_minSpreadLimit = new BigDecimal(150);
+	static BigDecimal spread_om_minProfitLimit = new BigDecimal(10);
+	static BigDecimal spread_om_maxLossLimit = new BigDecimal(40);
+	static BigDecimal spread_om_minLongPriceLimit = BigDecimal.valueOf(3);
+	static BigDecimal spread_om_maxMargin = BigDecimal.valueOf(150000);
 
-//	static int tickPrise = 50;
+
 
 	public static void calculateProfit(List<OptionContract> contracts) {
 		// single position
@@ -92,7 +94,7 @@ public class StrategyAnalyzer {
 		}
 		System.out.println();
 
-		// Call VS
+		// Put VS
 		List<OptionContract> putContracts = contracts.stream().filter(c -> c.getType() == OptionType.P)
 				.sorted((c1, c2) -> c2.getStrike().compareTo(c1.getStrike())).collect(Collectors.toList());
 
@@ -116,6 +118,32 @@ public class StrategyAnalyzer {
 			}
 		}
 
+		// OM spread
+		List<VerticalSpreadStrategy> vsOm = new ArrayList<>();
+		System.out.println("Out the Money Spread");
+		// Call VS
+		callContracts = contracts.stream().filter(c -> c.getType() == OptionType.C)
+				.sorted((c1, c2) -> c1.getStrike().compareTo(c2.getStrike())).collect(Collectors.toList());
+
+		for (int i = 0; i < callContracts.size() - 1; i++) {
+			OptionContract c1 = callContracts.get(i);
+
+			for (int j = i + 1; j < callContracts.size(); j++) {
+				OptionContract c2 = callContracts.get(j);
+
+				if (c2.getAsk().compareTo(spread_om_minLongPriceLimit) <= 0)
+					continue;
+
+				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.S, c1), new Position(LS.L, c2));
+				Profit p = vs.getProfit(spot, g_defaultPositionLoss);
+
+				if (matchOmProfitCondition(p)) {
+					vsOm.add(vs);
+					System.out.println(vs + " " + p);
+				}
+			}
+		}
+		
 		// Print VS strategies
 		vss.forEach(s -> {
 
@@ -196,6 +224,16 @@ public class StrategyAnalyzer {
 		if ((g_minProfitLimit == null || g_minProfitLimit.compareTo(p.getMaxProfit()) < 0)
 				&& (g_maxLossLimit == null || g_maxLossLimit.compareTo(p.getMaxLoss()) > 0)
 				&& (g_minSpreadLimit == null || g_minSpreadLimit.compareTo(p.getProfit()) < 0)) {
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean matchOmProfitCondition(Profit p) {
+		if ((spread_om_minProfitLimit == null || spread_om_minProfitLimit.compareTo(p.getMaxProfit()) < 0)
+				&& (spread_om_maxLossLimit == null || spread_om_maxLossLimit.compareTo(p.getMaxLoss()) > 0)
+				&& (spread_om_minSpreadLimit == null || spread_om_minSpreadLimit.compareTo(p.getProfit()) < 0)
+				&& (spread_om_maxMargin == null || spread_om_maxMargin.compareTo(p.getMargin()) > 0)) {
 			return true;
 		}
 		return false;
