@@ -19,7 +19,7 @@ public class StrategyAnalyzer {
 	static BigDecimal spot = BigDecimal.valueOf(17300);
 	static BigDecimal g_defaultPositionLoss = BigDecimal.valueOf(1);
 
-	static Integer g_maxMargin = 50000;
+	static BigDecimal g_maxMargin =  BigDecimal.valueOf(50000);
 
 	// Vertical Spread - IM
 	static BigDecimal g_minSpreadLimit = new BigDecimal(-150);
