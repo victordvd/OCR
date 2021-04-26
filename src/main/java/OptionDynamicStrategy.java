@@ -15,7 +15,7 @@ import vo.OptionContract;
 public class OptionDynamicStrategy {
 
 	
-	public static void main(String[] args) throws IOException, TesseractException {
+	public static void main(String[] args) throws Exception {
 		
 		// 1. Scan image of option informations from some trading APP
 	

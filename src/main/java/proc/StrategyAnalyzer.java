@@ -16,10 +16,10 @@ public class StrategyAnalyzer {
 
 	public static final BigDecimal TICK_PRICE = BigDecimal.valueOf(50);
 
-	static BigDecimal spot = BigDecimal.valueOf(17300);
+	static BigDecimal spot = BigDecimal.valueOf(17570);
 	static BigDecimal g_defaultPositionLoss = BigDecimal.valueOf(1);
 
-	static BigDecimal g_maxMargin =  BigDecimal.valueOf(50000);
+	static BigDecimal g_maxMargin = BigDecimal.valueOf(50000);
 
 	// Vertical Spread - IM
 	static BigDecimal g_minSpreadLimit = new BigDecimal(-150);
@@ -29,9 +29,9 @@ public class StrategyAnalyzer {
 
 	// Vertical Spread - OM
 	static BigDecimal spread_om_minUnrealizedGainLimit = new BigDecimal(5);
-	static BigDecimal spread_om_minShortStrikeSpreadLimit = new BigDecimal(100);
+	static BigDecimal spread_om_minShortStrikeSpreadLimit = new BigDecimal(50);
 	static BigDecimal spread_om_minProfitLimit = new BigDecimal(10);
-	static BigDecimal spread_om_maxLossLimit = new BigDecimal(100);
+	static BigDecimal spread_om_maxLossLimit = new BigDecimal(50);
 	static BigDecimal spread_om_minLongPriceLimit = BigDecimal.valueOf(2);
 	static BigDecimal spread_om_maxMargin = BigDecimal.valueOf(15000);
 

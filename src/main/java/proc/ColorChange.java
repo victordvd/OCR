@@ -44,7 +44,7 @@ public class ColorChange {
 		int lightWhite = 150;
 		int majorColor = 180;
 		int minorColor = 50;
-		int range = 40;
+		int range = 70;
 
 		Color black = Color.BLACK;
 		Color grey = new Color(36, 36, 36);

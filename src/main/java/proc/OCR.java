@@ -42,31 +42,44 @@ public class OCR {
 		 */
 	}
 
-	public static List<OptionContract> process(List<BufferedImage> colImgs) throws IOException, TesseractException {
+	public static List<OptionContract> process(List<BufferedImage> colImgs) throws Exception {
 		it.setDatapath(Configuration.TESSDATA_PATH);
 
 		int strikeIdx = 5;
 		int callBidIdx = 0;
 		int callAskIdx = 1;
+		int callLastIdx = 3;
 		int putBidIdx = 6;
 		int putAskIdx = 7;
+		int putLastIdx = 8;
 
 		List<String> strikeStrs = splitColumnString(colImgs.get(strikeIdx));
 		List<String> callBidStrs = splitColumnString(colImgs.get(callBidIdx));
 		List<String> callAskStrs = splitColumnString(colImgs.get(callAskIdx));
+		List<String> callLastStrs = splitColumnString(colImgs.get(callLastIdx));
 		List<String> putBidStrs = splitColumnString(colImgs.get(putBidIdx));
 		List<String> putAskStrs = splitColumnString(colImgs.get(putAskIdx));
+		List<String> putLastStrs = splitColumnString(colImgs.get(putLastIdx));
 
 		List<Double> strikes = parseStrike(strikeStrs);
 		System.out.println("Parsing call bid");
 		List<Double> callBids = parsePrices(callBidStrs);
 		System.out.println("Parsing call ask");
 		List<Double> callAsks = parsePrices(callAskStrs);
+//		System.out.println("Parsing call last");
+//		List<Double> callLasts = parsePrices(callLastStrs);
 		System.out.println("Parsing put bid");
 		List<Double> putBids = parsePrices(putBidStrs);
 		System.out.println("Parsing put ask");
 		List<Double> putAsks = parsePrices(putAskStrs);
+//		System.out.println("Parsing put last");
+//		List<Double> putLasts = parsePrices(putLastStrs);
 
+		// Correct
+		correctPrice(callBids, callAsks, true);
+		correctPrice(putBids, putAsks, false);
+
+		//
 		LinkedHashMap<Double, OptionContract[]> m = new LinkedHashMap<>();
 		List<OptionContract> contracts = new ArrayList<>();
 
@@ -147,7 +160,7 @@ public class OCR {
 			if (NumberUtils.isParsable(p)) {
 				Double pd = Double.valueOf(p);
 				ps.add(pd);
-				System.out.printf("[%d] %s%n", i, p);
+//				System.out.printf("[%d] %s%n", i, p);
 			} else if (StringUtils.isBlank(p)) {
 				System.out.printf("[%d] %s(blank)%n", i, p);
 			} else {
@@ -218,6 +231,33 @@ public class OCR {
 		StringRecongizer.parseString(str);
 
 //		Files.write(Paths.get(Configuration.OUTPUT_PATH+"tmp.csv"), str.getBytes());
+
+	}
+
+	private static void correctPrice(List<Double> bids, List<Double> asks, boolean isCall) throws Exception {
+
+		int stI = isCall ? 0 : bids.size() - 1;
+		int edI = isCall ? bids.size() - 1 : 0;
+		int increase = isCall ? 1 : -1;
+
+		for (int i = stI; i < edI; i += increase) {
+			Double bid = bids.get(i);
+			Double ask = asks.get(i);
+
+			Double nextBid = bids.get(i + 1);
+			Double nextAsk = asks.get(i + 1);
+//			System.out.println(bid+" "+ask);
+			if (bid > ask) {
+				if (bid < nextBid && ask < nextAsk) {
+					throw new Exception("Invalid price");
+				} else if (bid < nextBid) {
+					bids.set(i, ask - 1);
+				} else if (ask < nextAsk) {
+					asks.set(i, bid + 1);
+				}
+
+			}
+		}
 
 	}
 }
