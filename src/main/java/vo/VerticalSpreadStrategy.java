@@ -81,7 +81,7 @@ public class VerticalSpreadStrategy {
 			break;
 		case BearCall:
 		case BullPut:
-			profit.setMargin(strikeDiff.multiply(StrategyAnalyzer.TICK_PRICE));
+			profit.setMargin(strikeDiff.multiply(StrategyAnalyzer.OPTION_TICK_PRICE));
 
 //			System.out.println("S " + sProfit.getUnrealizedGain() + ", L " + lProfit.getUnrealizedGain());
 

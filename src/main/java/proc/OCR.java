@@ -247,15 +247,15 @@ public class OCR {
 			Double nextBid = bids.get(i + 1);
 			Double nextAsk = asks.get(i + 1);
 //			System.out.println(bid+" "+ask);
-			if (bid > ask) {
-				if (bid < nextBid && ask < nextAsk) {
-					throw new Exception("Invalid price");
-				} else if (bid < nextBid) {
-					bids.set(i, ask - 1);
-				} else if (ask < nextAsk) {
-					asks.set(i, bid + 1);
-				}
 
+			if (bid < nextBid && ask < nextAsk) {
+				throw new Exception("Invalid price");
+			} else if (bid < nextBid) {
+				bids.set(i, ask - 1);
+			} else if (ask < nextAsk) {
+				asks.set(i, bid + 1);
+			} else if (bid > ask) {
+				bids.set(i, ask - 1);
 			}
 		}
 
