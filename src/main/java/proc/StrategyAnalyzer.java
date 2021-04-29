@@ -40,10 +40,10 @@ public class StrategyAnalyzer {
 	// Vertical Spread - OM
 	static BigDecimal spread_om_minUnrealGainLimit = new BigDecimal(5);
 	static BigDecimal spread_om_minShortStrikeSpreadLimit = new BigDecimal(50);
-	static BigDecimal spread_om_minProfitLimit = new BigDecimal(20);
-	static BigDecimal spread_om_maxLossLimit = new BigDecimal(100);
+	static BigDecimal spread_om_minProfitLimit = new BigDecimal(10);
+	static BigDecimal spread_om_maxLossLimit = new BigDecimal(300);
 	static BigDecimal spread_om_minLongPriceLimit = BigDecimal.valueOf(2);
-	static BigDecimal spread_om_maxMargin = BigDecimal.valueOf(15000);
+	static BigDecimal spread_om_maxMargin = BigDecimal.valueOf(30000);
 
 	public static void calculateProfit(List<OptionContract> contracts) {
 		// single position
@@ -93,7 +93,7 @@ public class StrategyAnalyzer {
 //				System.out.println(p);
 				if (matchProfitCondition(p)) {
 					vss.add(vs);
-					System.out.println(vs + " " + p);
+					System.out.println(vs + " " + p + " " + vs.toJson());
 //					System.out.printf("L/S %dC/%dC  %s%n", pos1.getContract().getStrike().intValue(),
 //							pos2.getContract().getStrike().intValue(), p);
 				}
@@ -144,7 +144,7 @@ public class StrategyAnalyzer {
 //				System.out.println(vs + " " + p);
 				if (matchOmProfitCondition(vs, p)) {
 					vsOm.add(vs);
-					System.out.println(vs + " " + p);
+					System.out.println(vs + " " + p + " " + vs.toJson());
 //					System.out.println("bingo");
 				}
 			}

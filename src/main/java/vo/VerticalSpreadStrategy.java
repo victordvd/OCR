@@ -1,6 +1,10 @@
 package vo;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.gson.Gson;
 
 import proc.StrategyAnalyzer;
 
@@ -134,6 +138,13 @@ public class VerticalSpreadStrategy {
 			return String.format("%s [S]%s/[L]%s", cp, sPos.getContract().getStrike().intValue(),
 					lPos.getContract().getStrike().intValue());
 		}
+	}
+
+	public String toJson() {
+
+		Map<String, Object> m = new HashMap<>();
+
+		return String.format("[%s,%s]", new Gson().toJson(lPos), new Gson().toJson(sPos));
 	}
 
 }
