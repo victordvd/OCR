@@ -1,10 +1,14 @@
 package proc;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import exec.OptionDynamicStrategy;
 import vo.OptionContract;
 import vo.OptionContract.OptionType;
 import vo.Position;
@@ -279,5 +283,13 @@ public class StrategyAnalyzer {
 			return true;
 		}
 		return false;
+	}
+
+	private static void writeJsonInfo(VerticalSpreadStrategy vss) {
+		try (BufferedReader bw = Files.newBufferedReader(OptionDynamicStrategy.rawDataPath)) {
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
