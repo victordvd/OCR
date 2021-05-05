@@ -8,7 +8,7 @@ public class Profit {
 	private BigDecimal maxProfit = BigDecimal.ZERO;
 	private BigDecimal maxLoss = BigDecimal.ZERO;
 	private BigDecimal margin;
-	private BigDecimal basis = BigDecimal.ZERO;
+	private BigDecimal gainSpread = BigDecimal.ZERO;
 
 	public Profit() {
 	}
@@ -62,11 +62,20 @@ public class Profit {
 		this.margin = margin;
 	}
 
+	public BigDecimal getGainSpread() {
+		return gainSpread;
+	}
+
+	public void setGainSpread(BigDecimal profitSpread) {
+		this.gainSpread = profitSpread;
+	}
+
 	@Override
 	public String toString() {
 		String marginStr = (margin == null) ? "NA" : margin.setScale(1, BigDecimal.ROUND_HALF_UP).toString();
-		return String.format("[Unreal-gain: % 7.1f\tmax-profit: % 7.1f\tmax-loss: % 7.1f\tmargin: %s]", unrealizedGain,
-				maxProfit, maxLoss, marginStr);
+		return String.format(
+				"[Unreal-gain: % 7.1f\tmax-profit: % 7.1f\tmax-loss: % 7.1f\tgain-spread: % 7.1f\tmargin: %s]",
+				unrealizedGain, maxProfit, maxLoss, gainSpread, marginStr);
 	}
 
 }

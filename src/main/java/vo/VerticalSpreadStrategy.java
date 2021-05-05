@@ -63,18 +63,6 @@ public class VerticalSpreadStrategy {
 		Profit lProfit = lPos.getProfit(spot, defaultLoss);
 		Profit sProfit = sPos.getProfit(spot, defaultLoss);
 		BigDecimal priceDiff = lPos.getPrice().subtract(sPos.getPrice()).abs();
-//		if (isLongPrimary) {
-//
-//			profit.setUnrealizedGain(sProfit.getUnrealizedGain().add(lProfit.getUnrealizedGain()));
-//			profit.setMaxProfit(strikeDiff.subtract(priceDiff).subtract(defaultLoss.multiply(BigDecimal.valueOf(2))));
-//			profit.setMaxLoss(priceDiff.add(defaultLoss.multiply(BigDecimal.valueOf(2))));
-//		} else {// bear spread
-//			profit.setMargin(strikeDiff.multiply(StrategyAnalyzer.TICK_PRICE));
-//
-//			profit.setUnrealizedGain(sProfit.getUnrealizedGain().add(lProfit.getUnrealizedGain()));
-//			profit.setMaxProfit(priceDiff.add(defaultLoss.multiply(BigDecimal.valueOf(2))));
-//			profit.setMaxLoss(strikeDiff.subtract(priceDiff).subtract(defaultLoss.multiply(BigDecimal.valueOf(2))));
-//		}
 
 		switch (type) {
 		case BullCall:
@@ -92,6 +80,23 @@ public class VerticalSpreadStrategy {
 			profit.setUnrealizedGain(sProfit.getUnrealizedGain().add(lProfit.getUnrealizedGain()));
 			profit.setMaxProfit(priceDiff.subtract(defaultLoss.multiply(BigDecimal.valueOf(2))));
 			profit.setMaxLoss(strikeDiff.subtract(priceDiff).add(defaultLoss.multiply(BigDecimal.valueOf(2))));
+			break;
+		}
+
+		switch (type) {
+		case BullCall:
+			profit.setGainSpread(lPos.getContract().getStrike().subtract(spot).add(profit.getMaxLoss()));
+			break;
+		case BearPut:
+			profit.setGainSpread(spot.subtract(lPos.getContract().getStrike()).add(profit.getMaxLoss()));
+			break;
+		case BearCall:
+			profit.setGainSpread(
+					spot.subtract(sPos.getContract().getStrike()).add(defaultLoss.multiply(BigDecimal.valueOf(2))));
+			break;
+		case BullPut:
+			profit.setGainSpread(
+					sPos.getContract().getStrike().subtract(spot).add(defaultLoss.multiply(BigDecimal.valueOf(2))));
 			break;
 		}
 

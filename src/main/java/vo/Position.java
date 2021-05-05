@@ -43,11 +43,13 @@ public class Position {
 				p.setMaxLoss(price.add(defaultLoss));
 				p.setUnrealizedGain(spot.subtract(contract.ask).subtract(contract.strike).subtract(defaultLoss));
 				p.setUnrealizedGain(p.getUnrealizedGain().min(p.getMaxProfit()).max(p.getMaxLoss().negate()));
+				p.setGainSpread(contract.getStrike().subtract(spot).add(p.getUnrealizedGain()));
 			} else {
 				p.setMaxProfit(contract.bid.subtract(defaultLoss));
 				p.setMaxLoss(infi);
 				p.setUnrealizedGain(price.subtract(spot.subtract(contract.strike)).subtract(defaultLoss));
 				p.setUnrealizedGain(p.getUnrealizedGain().min(p.getMaxProfit()));
+				p.setGainSpread(spot.subtract(contract.getStrike()).add(defaultLoss));
 			}
 		} else {
 			if (LS.L == ls) {
@@ -55,11 +57,13 @@ public class Position {
 				p.setMaxLoss(price.add(defaultLoss));
 				p.setUnrealizedGain(contract.strike.subtract(spot).subtract(contract.ask).subtract(defaultLoss));
 				p.setUnrealizedGain(p.getUnrealizedGain().min(p.getMaxProfit()).max(p.getMaxLoss().negate()));
+				p.setGainSpread(spot.subtract(contract.getStrike()).add(p.getUnrealizedGain()));
 			} else {
 				p.setMaxProfit(contract.bid.subtract(defaultLoss));
 				p.setMaxLoss(infi);
 				p.setUnrealizedGain(price.subtract(contract.strike.subtract(spot)).subtract(defaultLoss));
 				p.setUnrealizedGain(p.getUnrealizedGain().min(p.getMaxProfit()));
+				p.setGainSpread(contract.getStrike().subtract(spot).add(defaultLoss));
 			}
 		}
 		return p;

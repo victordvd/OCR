@@ -20,7 +20,7 @@ public class StrategyAnalyzer {
 
 	public static final BigDecimal OPTION_TICK_PRICE = BigDecimal.valueOf(50);
 
-	static BigDecimal spot = BigDecimal.valueOf(17570);
+	static BigDecimal spot = BigDecimal.valueOf(16850);
 	static BigDecimal g_defaultPositionLoss = BigDecimal.valueOf(1);
 
 	static BigDecimal g_maxMargin = BigDecimal.valueOf(50000);
@@ -29,6 +29,7 @@ public class StrategyAnalyzer {
 	static BigDecimal l_minUnrealGainLimit = new BigDecimal(-150);
 	static BigDecimal l_minProfitLimit = new BigDecimal(60);
 	static BigDecimal l_maxLossLimit = new BigDecimal(80);
+	static BigDecimal l_maxGainSpread = new BigDecimal(400);
 
 	// Single - Short
 	static BigDecimal s_minUnrealGainLimit = new BigDecimal(-150);
@@ -40,12 +41,13 @@ public class StrategyAnalyzer {
 	static BigDecimal spread_im_minProfitLimit = new BigDecimal(60);
 	static BigDecimal spread_im_maxLossLimit = new BigDecimal(80);
 	static BigDecimal spread_im_minShortPriceLimit = BigDecimal.valueOf(8);
+	static BigDecimal spread_im_maxGainSpread = BigDecimal.valueOf(400);
 
 	// Vertical Spread - OM
-	static BigDecimal spread_om_minUnrealGainLimit = new BigDecimal(5);
-	static BigDecimal spread_om_minShortStrikeSpreadLimit = new BigDecimal(50);
-	static BigDecimal spread_om_minProfitLimit = new BigDecimal(10);
-	static BigDecimal spread_om_maxLossLimit = new BigDecimal(300);
+	static BigDecimal spread_om_minUnrealGainLimit = new BigDecimal(20);
+	static BigDecimal spread_om_minShortStrikeSpreadLimit = new BigDecimal(200);
+	static BigDecimal spread_om_minProfitLimit = new BigDecimal(20);
+	static BigDecimal spread_om_maxLossLimit = new BigDecimal(100);
 	static BigDecimal spread_om_minLongPriceLimit = BigDecimal.valueOf(2);
 	static BigDecimal spread_om_maxMargin = BigDecimal.valueOf(30000);
 
@@ -254,7 +256,8 @@ public class StrategyAnalyzer {
 	private static boolean matchSingleLongCondition(Profit p) {
 		if ((l_minProfitLimit == null || l_minProfitLimit.compareTo(p.getMaxProfit()) < 0)
 				&& (l_maxLossLimit == null || l_maxLossLimit.compareTo(p.getMaxLoss()) > 0)
-				&& (l_minUnrealGainLimit == null || l_minUnrealGainLimit.compareTo(p.getUnrealizedGain()) < 0)) {
+				&& (l_minUnrealGainLimit == null || l_minUnrealGainLimit.compareTo(p.getUnrealizedGain()) < 0)
+				&& (l_maxGainSpread == null || l_maxGainSpread.compareTo(p.getGainSpread()) > 0)) {
 			return true;
 		}
 		return false;
@@ -264,7 +267,8 @@ public class StrategyAnalyzer {
 		if ((spread_im_minProfitLimit == null || spread_im_minProfitLimit.compareTo(p.getMaxProfit()) < 0)
 				&& (spread_im_maxLossLimit == null || spread_im_maxLossLimit.compareTo(p.getMaxLoss()) > 0)
 				&& (spread_im_minUnrealGainLimit == null
-						|| spread_im_minUnrealGainLimit.compareTo(p.getUnrealizedGain()) < 0)) {
+						|| spread_im_minUnrealGainLimit.compareTo(p.getUnrealizedGain()) < 0)
+				&& (spread_im_maxGainSpread == null || spread_im_maxGainSpread.compareTo(p.getGainSpread()) > 0)) {
 			return true;
 		}
 		return false;
