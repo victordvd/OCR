@@ -19,28 +19,28 @@ public class OCR {
 
 	private static Tesseract it = new Tesseract();
 
-	public static void main(String args[]) throws Exception {
-
-		/*
-		 * File f = new File(Configuration.PROCESSING_PATH + "tmp.png");
-		 * 
-		 * BufferedImage ipimage = ImageIO.read(f);
-		 * 
-		 * // getting RGB content of the whole image file double d =
-		 * ipimage.getRGB(ipimage.getTileWidth() / 2, ipimage.getTileHeight() / 2);
-		 * 
-		 * // comparing the values // and setting new scaling values // that are later
-		 * on used by RescaleOP processImg(ipimage, 3f, -10f);
-		 */
-		/*
-		 * if (d >= -1.4211511E7 && d < -7254228) { processImg(ipimage, 3f, -10f); }
-		 * else if (d >= -7254228 && d < -2171170) { processImg(ipimage, 1.455f, -47f);
-		 * } else if (d >= -2171170 && d < -1907998) { processImg(ipimage, 1.35f, -10f);
-		 * } else if (d >= -1907998 && d < -257) { processImg(ipimage, 1.19f, 0.5f); }
-		 * else if (d >= -257 && d < -1) { processImg(ipimage, 1f, 0.5f); } else if (d
-		 * >= -1 && d < 2) { processImg(ipimage, 1f, 0.35f); }
-		 */
-	}
+//	public static void main(String args[]) throws Exception {
+//
+//		/*
+//		 * File f = new File(Configuration.PROCESSING_PATH + "tmp.png");
+//		 * 
+//		 * BufferedImage ipimage = ImageIO.read(f);
+//		 * 
+//		 * // getting RGB content of the whole image file double d =
+//		 * ipimage.getRGB(ipimage.getTileWidth() / 2, ipimage.getTileHeight() / 2);
+//		 * 
+//		 * // comparing the values // and setting new scaling values // that are later
+//		 * on used by RescaleOP processImg(ipimage, 3f, -10f);
+//		 */
+//		/*
+//		 * if (d >= -1.4211511E7 && d < -7254228) { processImg(ipimage, 3f, -10f); }
+//		 * else if (d >= -7254228 && d < -2171170) { processImg(ipimage, 1.455f, -47f);
+//		 * } else if (d >= -2171170 && d < -1907998) { processImg(ipimage, 1.35f, -10f);
+//		 * } else if (d >= -1907998 && d < -257) { processImg(ipimage, 1.19f, 0.5f); }
+//		 * else if (d >= -257 && d < -1) { processImg(ipimage, 1f, 0.5f); } else if (d
+//		 * >= -1 && d < 2) { processImg(ipimage, 1f, 0.35f); }
+//		 */
+//	}
 
 	public static List<OptionContract> process(List<BufferedImage> colImgs) throws Exception {
 		it.setDatapath(Configuration.TESSDATA_PATH);
@@ -240,13 +240,15 @@ public class OCR {
 		int edI = isCall ? bids.size() - 1 : 0;
 		int increase = isCall ? 1 : -1;
 
-		for (int i = stI; i < edI; i += increase) {
+		for (int i = stI; continueLoop(i, edI, isCall); i += increase) {
 			Double bid = bids.get(i);
 			Double ask = asks.get(i);
 
-			Double nextBid = bids.get(i + 1);
-			Double nextAsk = asks.get(i + 1);
-//			System.out.println(bid+" "+ask);
+			Double nextBid = bids.get(i + increase);
+			Double nextAsk = asks.get(i + increase);
+
+//			if (!isCall)
+//			System.out.println("Correct >>> " + bid + " " + ask);
 
 			if (bid < nextBid && ask < nextAsk) {
 				throw new Exception("Invalid price");
@@ -259,5 +261,12 @@ public class OCR {
 			}
 		}
 
+	}
+
+	private static boolean continueLoop(int i, int edI, boolean isCall) {
+		if (isCall)
+			return i < edI;
+		else
+			return i > edI;
 	}
 }
