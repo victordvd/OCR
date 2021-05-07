@@ -20,7 +20,7 @@ public class StrategyAnalyzer {
 
 	public static final BigDecimal OPTION_TICK_PRICE = BigDecimal.valueOf(50);
 
-	static BigDecimal spot = BigDecimal.valueOf(16850);
+	static BigDecimal spot = BigDecimal.valueOf(17285);
 	static BigDecimal g_defaultPositionLoss = BigDecimal.valueOf(1);
 
 	static BigDecimal g_maxMargin = BigDecimal.valueOf(50000);
