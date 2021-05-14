@@ -248,10 +248,10 @@ public class OCR {
 			Double nextAsk = asks.get(i + increase);
 
 //			if (!isCall)
-//			System.out.println("Correct >>> " + bid + " " + ask);
+			System.out.printf("Correct >>> %.1f/%.1f : %.1f/%.1f%n", bid, ask, nextBid, nextAsk);
 
 			if (bid < nextBid && ask < nextAsk) {
-				throw new Exception("Invalid price");
+//				throw new Exception("Invalid price");
 			} else if (bid < nextBid) {
 				bids.set(i, ask - 1);
 			} else if (ask < nextAsk) {

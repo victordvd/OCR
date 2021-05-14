@@ -20,13 +20,13 @@ public class StrategyAnalyzer {
 
 	public static final BigDecimal OPTION_TICK_PRICE = BigDecimal.valueOf(50);
 
-	static BigDecimal spot = BigDecimal.valueOf(17285);
+	static BigDecimal spot = BigDecimal.valueOf(15830);
 	static BigDecimal g_defaultPositionLoss = BigDecimal.valueOf(1);
 
 	static BigDecimal g_maxMargin = BigDecimal.valueOf(50000);
 
 	// Single - Long
-	static BigDecimal l_minUnrealGainLimit = new BigDecimal(-150);
+	static BigDecimal l_minUnrealGainLimit = null;// new BigDecimal(-150);
 	static BigDecimal l_minProfitLimit = new BigDecimal(60);
 	static BigDecimal l_maxLossLimit = new BigDecimal(80);
 	static BigDecimal l_maxGainSpread = new BigDecimal(400);
@@ -37,18 +37,18 @@ public class StrategyAnalyzer {
 	static BigDecimal s_maxMargin = BigDecimal.valueOf(15000);
 
 	// Vertical Spread - IM
-	static BigDecimal spread_im_minUnrealGainLimit = new BigDecimal(-150);
-	static BigDecimal spread_im_minProfitLimit = new BigDecimal(60);
-	static BigDecimal spread_im_maxLossLimit = new BigDecimal(80);
+	static BigDecimal spread_im_minUnrealGainLimit = null;// new BigDecimal(-150);
+	static BigDecimal spread_im_minProfitLimit = new BigDecimal(100);
+	static BigDecimal spread_im_maxLossLimit = new BigDecimal(50);
 	static BigDecimal spread_im_minShortPriceLimit = BigDecimal.valueOf(8);
 	static BigDecimal spread_im_maxGainSpread = BigDecimal.valueOf(400);
 
 	// Vertical Spread - OM
-	static BigDecimal spread_om_minUnrealGainLimit = new BigDecimal(20);
-	static BigDecimal spread_om_minShortStrikeSpreadLimit = new BigDecimal(200);
-	static BigDecimal spread_om_minProfitLimit = new BigDecimal(20);
+	static BigDecimal spread_om_minUnrealGainLimit = new BigDecimal(40);
+	static BigDecimal spread_om_minShortStrikeSpreadLimit = new BigDecimal(700);
+	static BigDecimal spread_om_minProfitLimit = new BigDecimal(40);
 	static BigDecimal spread_om_maxLossLimit = new BigDecimal(100);
-	static BigDecimal spread_om_minLongPriceLimit = BigDecimal.valueOf(2);
+	static BigDecimal spread_om_minLongPriceLimit = BigDecimal.valueOf(10);
 	static BigDecimal spread_om_maxMargin = BigDecimal.valueOf(30000);
 
 	public static void calculateProfit(List<OptionContract> contracts) {
