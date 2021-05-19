@@ -18,6 +18,11 @@ public class OptionContract {
 	public OptionContract() {
 	}
 
+	public OptionContract(OptionType type) {
+		super();
+		this.type = type;
+	}
+
 	public OptionContract(OptionType type, double strike, double bid, double ask) {
 		super();
 		this.type = type;
