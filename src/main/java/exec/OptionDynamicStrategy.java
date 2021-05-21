@@ -3,11 +3,10 @@ package exec;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 import proc.StrategyAnalyzer;
 import proc.TxoDataFetch;
-import vo.OptionContract;
+import vo.RawData;
 
 public class OptionDynamicStrategy {
 
@@ -27,11 +26,11 @@ public class OptionDynamicStrategy {
 //		List<BufferedImage> colImgs = ColorChange.replaceChar(image);
 //		List<OptionContract> contracts = OCR.process(colImgs);
 
-		List<OptionContract> contracts = TxoDataFetch.fetchTxoRawData();
+		RawData rawdata = TxoDataFetch.fetchTxoRawData();
 
 		// 3. Analyze option informations for the most profitable option strategy
 		System.out.println("\nAnalyze strategies");
-		StrategyAnalyzer.calculateProfit(contracts);
+		StrategyAnalyzer.calculateProfit(rawdata);
 	}
 
 }

@@ -1,4 +1,5 @@
 package proc;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -15,17 +16,26 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import vo.OptionContract;
+import vo.RawData;
 
 public class TxoDataFetch {
 
-	public static List<OptionContract> fetchTxoRawData() throws IOException {
+	public static RawData fetchTxoRawData() throws IOException {
+		RawData raw = new RawData();
 		String url = "https://tw.screener.finance.yahoo.net/future/aa03?opmr=optionfull&opcm=WTXO&opym=202105";
 
 		Document doc = Jsoup.connect(url).get();
 
+		String spotTxt = doc.getElementsByTag("table").get(0).getElementsByTag("tbody").get(0).children().get(0)
+				.children().get(1).text();
+
+		System.out.println(spotTxt);
+		raw.spot = new BigDecimal(spotTxt.split("（")[0]);
+
 		List<Element> rows = doc.getElementsByTag("table").get(1).getElementsByTag("tbody").get(0).children();
 
-		List<OptionContract> contracts = new ArrayList<>();
+		raw.callContracts = new ArrayList<>();
+		raw.putContracts = new ArrayList<>();
 
 		for (int i = 0; i < rows.size(); i++) {
 			if (i == 0)
@@ -36,8 +46,8 @@ public class TxoDataFetch {
 			OptionContract call = new OptionContract(OptionContract.OptionType.C);
 			OptionContract put = new OptionContract(OptionContract.OptionType.P);
 
-			contracts.add(call);
-			contracts.add(put);
+			raw.callContracts.add(call);
+			raw.putContracts.add(put);
 
 			for (int j = 0; j < r.children().size(); j++) {
 				Element c = r.children().get(j);
@@ -63,7 +73,7 @@ public class TxoDataFetch {
 			}
 		}
 
-		return contracts;
+		return raw;
 
 	}
 

@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import exec.OptionDynamicStrategy;
 import vo.OptionContract;
@@ -14,13 +13,14 @@ import vo.OptionContract.OptionType;
 import vo.Position;
 import vo.Position.LS;
 import vo.Profit;
+import vo.RawData;
 import vo.VerticalSpreadStrategy;
 
 public class StrategyAnalyzer {
 
 	public static final BigDecimal OPTION_TICK_PRICE = BigDecimal.valueOf(50);
 
-	static BigDecimal spot = BigDecimal.valueOf(16130);
+	static BigDecimal spot;// = BigDecimal.valueOf(16130);
 	static BigDecimal g_defaultPositionLoss = BigDecimal.valueOf(1);
 
 	static BigDecimal g_maxMargin = BigDecimal.valueOf(50000);
@@ -38,10 +38,10 @@ public class StrategyAnalyzer {
 
 	// Vertical Spread - IM
 	static BigDecimal spread_im_minUnrealGainLimit = null;// new BigDecimal(-150);
-	static BigDecimal spread_im_minProfitLimit = new BigDecimal(100);
+	static BigDecimal spread_im_minProfitLimit = new BigDecimal(50);
 	static BigDecimal spread_im_maxLossLimit = new BigDecimal(50);
 	static BigDecimal spread_im_minShortPriceLimit = BigDecimal.valueOf(8);
-	static BigDecimal spread_im_maxGainSpread = BigDecimal.valueOf(400);
+	static BigDecimal spread_im_maxGainSpread = BigDecimal.valueOf(500);
 
 	// Vertical Spread - OM
 	static BigDecimal spread_om_minUnrealGainLimit = new BigDecimal(40);
@@ -51,17 +51,19 @@ public class StrategyAnalyzer {
 	static BigDecimal spread_om_minLongPriceLimit = BigDecimal.valueOf(10);
 	static BigDecimal spread_om_maxMargin = BigDecimal.valueOf(30000);
 
-	public static void calculateProfit(List<OptionContract> contracts) {
+	public static void calculateProfit(RawData rawdata) {
+		spot = rawdata.spot;
+
 		// single position
 		System.out.println("Single position");
 
-		contracts.stream()
-				.filter(c -> StrategyAnalyzer.matchSingleLongCondition(
-						new Position(Position.LS.L, c).getProfit(spot, g_defaultPositionLoss)))
-				.sorted((c1, c2) -> c1.strike.compareTo(c2.strike)).forEach(c -> {
-					Profit p = new Position(Position.LS.L, c).getProfit(spot, g_defaultPositionLoss);
-					System.out.printf("[L]%.0f%s %s%n", c.strike, c.type, p.toString());
-				});
+//		contracts.stream()
+//				.filter(c -> StrategyAnalyzer.matchSingleLongCondition(
+//						new Position(Position.LS.L, c).getProfit(spot, g_defaultPositionLoss)))
+//				.sorted((c1, c2) -> c1.strike.compareTo(c2.strike)).forEach(c -> {
+//					Profit p = new Position(Position.LS.L, c).getProfit(spot, g_defaultPositionLoss);
+//					System.out.printf("[L]%.0f%s %s%n", c.strike, c.type, p.toString());
+//				});
 
 		System.out.println();
 		System.out.println("Multiple position");
@@ -70,8 +72,9 @@ public class StrategyAnalyzer {
 		List<VerticalSpreadStrategy> vss = new ArrayList<>();
 
 		// Call VS
-		List<OptionContract> callContracts = contracts.stream().filter(c -> c.getType() == OptionType.C)
-				.sorted((c1, c2) -> c1.getStrike().compareTo(c2.getStrike())).collect(Collectors.toList());
+		List<OptionContract> callContracts = rawdata.callContracts;
+//		List<OptionContract> callContracts = contracts.stream().filter(c -> c.getType() == OptionType.C)
+//				.sorted((c1, c2) -> c1.getStrike().compareTo(c2.getStrike())).collect(Collectors.toList());
 
 		for (int i = 0; i < callContracts.size() - 1; i++) {
 			OptionContract c1 = callContracts.get(i);
@@ -108,8 +111,9 @@ public class StrategyAnalyzer {
 		System.out.println();
 
 		// Put VS
-		List<OptionContract> putContracts = contracts.stream().filter(c -> c.getType() == OptionType.P)
-				.sorted((c1, c2) -> c2.getStrike().compareTo(c1.getStrike())).collect(Collectors.toList());
+		List<OptionContract> putContracts = rawdata.putContracts;
+//				contracts.stream().filter(c -> c.getType() == OptionType.P)
+//				.sorted((c1, c2) -> c2.getStrike().compareTo(c1.getStrike())).collect(Collectors.toList());
 
 		for (int i = 0; i < putContracts.size() - 1; i++) {
 			OptionContract c1 = putContracts.get(i);
@@ -147,7 +151,7 @@ public class StrategyAnalyzer {
 				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.L, c2), new Position(LS.S, c1));
 				Profit p = vs.getProfit(spot, g_defaultPositionLoss);
 
-//				System.out.println(vs + " " + p);
+//				System.out.println(vs + " " + p.getMargin());
 				if (matchOmProfitCondition(vs, p)) {
 					vsOm.add(vs);
 					System.out.println(vs + " " + p + " " + vs.toJson());
@@ -169,7 +173,7 @@ public class StrategyAnalyzer {
 				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.L, c2), new Position(LS.S, c1));
 				Profit p = vs.getProfit(spot, g_defaultPositionLoss);
 
-//				System.out.println(vs + " " + p);
+//				System.out.println(vs + " # " + p);
 				if (matchOmProfitCondition(vs, p)) {
 					vsOm.add(vs);
 					System.out.println(vs + " " + p);
@@ -281,7 +285,8 @@ public class StrategyAnalyzer {
 				&& (spread_om_maxLossLimit == null || spread_om_maxLossLimit.compareTo(p.getMaxLoss()) > 0)
 				&& (spread_om_minShortStrikeSpreadLimit == null
 						|| spread_om_minShortStrikeSpreadLimit.compareTo(imStrikePriceSpread) <= 0)
-				&& (spread_om_maxMargin == null || spread_om_maxMargin.compareTo(p.getMargin()) >= 0)
+				&& (spread_om_maxMargin == null || p.getMargin() == null
+						|| spread_om_maxMargin.compareTo(p.getMargin()) >= 0)
 				&& (spread_om_minUnrealGainLimit == null
 						|| spread_om_minUnrealGainLimit.compareTo(p.getUnrealizedGain()) <= 0)) {
 			return true;
