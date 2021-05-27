@@ -14,6 +14,7 @@ public class OptionContract {
 	public BigDecimal strike;
 	public BigDecimal bid;
 	public BigDecimal ask;
+	public int openInterest;
 
 	public OptionContract() {
 	}
@@ -104,6 +105,14 @@ public class OptionContract {
 
 	public void setAsk(BigDecimal ask) {
 		this.ask = ask;
+	}
+
+	public int getOpenInterest() {
+		return openInterest;
+	}
+
+	public void setOpenInterest(int openInterest) {
+		this.openInterest = openInterest;
 	}
 
 }

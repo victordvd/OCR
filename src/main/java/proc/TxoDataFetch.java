@@ -22,12 +22,19 @@ public class TxoDataFetch {
 
 	public static RawData fetchTxoRawData() throws IOException {
 		RawData raw = new RawData();
-		String url = "https://tw.screener.finance.yahoo.net/future/aa03?opmr=optionfull&opcm=WTXO&opym=202105";
+
+		String contractParam = "202106W1";
+		String url = "https://tw.screener.finance.yahoo.net/future/aa03?opmr=optionfull&opcm=WTXO&opym="
+				+ contractParam;
 
 		Document doc = Jsoup.connect(url).get();
 
 		String spotTxt = doc.getElementsByTag("table").get(0).getElementsByTag("tbody").get(0).children().get(0)
 				.children().get(1).text();
+		Element contractSelect = doc.getElementsByTag("table").get(0).getElementsByTag("tfoot").get(0).children().get(0)
+				.children().get(0).children().get(1);
+
+		System.out.println("select " + contractSelect.getClass().getName());
 
 		System.out.println(spotTxt);
 		raw.spot = new BigDecimal(spotTxt.split("（")[0]);
@@ -51,24 +58,37 @@ public class TxoDataFetch {
 
 			for (int j = 0; j < r.children().size(); j++) {
 				Element c = r.children().get(j);
+				if ("--".equals(c.text()))
+					continue;
 
-				switch (j) {
-				case 0:
-					call.bid = new BigDecimal(c.text());
-					break;
-				case 1:
-					call.ask = new BigDecimal(c.text());
-					break;
-				case 7:
-					call.strike = new BigDecimal(c.text());
-					put.strike = call.strike;
-					break;
-				case 8:
-					put.bid = new BigDecimal(c.text());
-					break;
-				case 9:
-					put.ask = new BigDecimal(c.text());
-					break;
+				try {
+					switch (j) {
+					case 0:
+						call.bid = new BigDecimal(c.text());
+						break;
+					case 1:
+						call.ask = new BigDecimal(c.text());
+						break;
+					case 4:
+						call.openInterest = Integer.valueOf(c.text());
+						break;
+					case 7:
+						call.strike = new BigDecimal(c.text());
+						put.strike = call.strike;
+						break;
+					case 8:
+						put.bid = new BigDecimal(c.text());
+						break;
+					case 9:
+						put.ask = new BigDecimal(c.text());
+						break;
+					case 12:
+						put.openInterest = Integer.valueOf(c.text());
+						break;
+					}
+				} catch (Exception e) {
+					System.out.println("text: " + c.text());
+					throw e;
 				}
 			}
 		}
