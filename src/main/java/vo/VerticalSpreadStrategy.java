@@ -50,6 +50,10 @@ public class VerticalSpreadStrategy {
 //	}
 
 	public Profit getProfit(BigDecimal spot, BigDecimal defaultLoss) {
+		if (lPos.getPrice() == null || sPos.getPrice() == null) {
+			return new Profit();
+		}
+
 		Profit profit = new Profit();
 
 		BigDecimal lStrike = lPos.getContract().getStrike();
@@ -62,6 +66,7 @@ public class VerticalSpreadStrategy {
 
 		Profit lProfit = lPos.getProfit(spot, defaultLoss);
 		Profit sProfit = sPos.getProfit(spot, defaultLoss);
+
 		BigDecimal priceDiff = lPos.getPrice().subtract(sPos.getPrice()).abs();
 
 		switch (type) {

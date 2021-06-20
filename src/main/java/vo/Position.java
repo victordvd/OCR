@@ -35,6 +35,11 @@ public class Position {
 	}
 
 	public Profit getProfit(BigDecimal spot, BigDecimal defaultLoss) {
+		if (price == null) {
+			System.out.println(contract + " has no price.");
+			return new Profit();
+		}
+
 		BigDecimal infi = new BigDecimal("9999");
 		Profit p = new Profit();
 		if (OptionType.C == contract.type) {

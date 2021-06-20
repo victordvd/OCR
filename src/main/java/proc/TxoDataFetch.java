@@ -23,9 +23,11 @@ public class TxoDataFetch {
 	public static RawData fetchTxoRawData() throws IOException {
 		RawData raw = new RawData();
 
-		String contractParam = "202106W1";
+		String contractParam = "202106W4";
 		String url = "https://tw.screener.finance.yahoo.net/future/aa03?opmr=optionfull&opcm=WTXO&opym="
 				+ contractParam;
+
+		System.out.println("src url: " + url);
 
 		Document doc = Jsoup.connect(url).get();
 

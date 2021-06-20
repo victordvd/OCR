@@ -87,7 +87,9 @@ public class StrategyAnalyzer {
 			for (int j = i + 1; j < callContracts.size(); j++) {
 				OptionContract c2 = callContracts.get(j);
 
-				if (c2.getAsk().compareTo(spread_im_minShortPriceLimit) <= 0)
+				if (c2.getAsk() == null || c2.getAsk().compareTo(spread_im_minShortPriceLimit) <= 0)
+					continue;
+				if (c2.getBid() == null || c2.getBid().compareTo(spread_im_minShortPriceLimit) <= 0)
 					continue;
 
 				Position pos2 = new Position(LS.S, c2);
@@ -122,7 +124,7 @@ public class StrategyAnalyzer {
 
 			for (int j = i + 1; j < putContracts.size(); j++) {
 				OptionContract c2 = putContracts.get(j);
-				if (c2.getAsk().compareTo(spread_im_minShortPriceLimit) <= 0)
+				if (c2.getAsk() == null || c2.getAsk().compareTo(spread_im_minShortPriceLimit) <= 0)
 					continue;
 
 				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.L, c1), new Position(LS.S, c2));
@@ -145,7 +147,7 @@ public class StrategyAnalyzer {
 			for (int j = i + 1; j < callContracts.size(); j++) {
 				OptionContract c2 = callContracts.get(j);
 
-				if (c2.getAsk().compareTo(spread_om_minLongPriceLimit) <= 0)
+				if (c2.getAsk() == null || c2.getAsk().compareTo(spread_om_minLongPriceLimit) <= 0)
 					continue;
 
 				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.L, c2), new Position(LS.S, c1));
@@ -167,7 +169,7 @@ public class StrategyAnalyzer {
 			for (int j = i + 1; j < putContracts.size(); j++) {
 				OptionContract c2 = putContracts.get(j);
 
-				if (c2.getAsk().compareTo(spread_om_minLongPriceLimit) <= 0)
+				if (c2.getAsk() == null || c2.getAsk().compareTo(spread_om_minLongPriceLimit) <= 0)
 					continue;
 
 				VerticalSpreadStrategy vs = new VerticalSpreadStrategy(new Position(LS.L, c2), new Position(LS.S, c1));
@@ -205,10 +207,16 @@ public class StrategyAnalyzer {
 	}
 
 	public static Profit getProfit(Position position, BigDecimal spot) {
-		LS ls = position.getLs();
-		OptionContract contract = position.getContract();
-		BigDecimal infi = new BigDecimal("9999");
 		Profit p = new Profit();
+		OptionContract contract = position.getContract();
+
+		if (contract.ask == null || contract.bid == null)
+			return p;
+
+		LS ls = position.getLs();
+
+		BigDecimal infi = new BigDecimal("9999");
+
 //		Profit p = new Profit(contract,ls);
 		if (OptionType.C == contract.type) {
 			if (LS.L == ls) {
