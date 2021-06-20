@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "target": "es5",
+        "allowJs": false,
+        "allowSyntheticDefaultImports": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "lib": [
+            "es2017",
+            "dom",
+            "es5"
+        ]
+    },
+    "problemMatcher": [
+        "$tsc"
+    ],
+    "types": [
+        "jquery"
+    ],
+    "include": [
+        "src/*"
+    ]
+        // "files": [
+    //     "index.d.ts",
+    //     "jquery.d.ts"
+    // ]
+}

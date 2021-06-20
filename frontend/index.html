@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<!-- Auto Generated with Sencha Architect -->
+<!-- Modifications to this file will be overwritten. -->
+<html>
+
+<head>
+    <title>TEST</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+
+    <!-- icon -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    
+    <!-- bootstrap -->
+    <title>TEST</title>
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+    <!--<script> var exports = {}; </script>-->
+    <link rel="stylesheet" type="text/css" href="src/app.css">
+    <script src="https://unpkg.com/d3@3/d3.min.js"></script>
+    <script src="https://unpkg.com/function-plot@1/dist/function-plot.js"></script>
+    <script src="jquery-3.2.1.js"></script>
+    <script src="src/position_store.js"></script>
+    <script src="src/canvas.js"></script>
+    <script src="src/model.js"></script>
+    <script src="src/app.js"></script>
+</head>
+
+<body style="padding: 0px 0px 20px 20px;">
+    <h2>TXO 部位計算器 (v0.2)</h2>
+    <!--
+    <br> 現貨價格:
+    <input type="text" name="spotPrice">
+    -->
+    <br>
+    <br>
+    <button id="addBtn">Add</button>
+    <label>Spot</label>
+    <input id="spot" value="17550">
+    <table id="customers" border="1px" width="900">
+        <tr>
+            <!-- <th class="chk"><input type="checkbox" checked="true"></th> -->
+            <th></th>
+            <th>標的</th>
+            <th>買賣</th>
+            <th>C/P</th>
+            <th>履約價</th>
+            <th>數量</th>
+            <th>價格</th>
+        </tr>
+    </table>
+    <br>
+    <!-- <canvas id="canv" width="600" height="300"></canvas> -->
+    <div id="fplot"></div>
+</body>
+
+</html>
