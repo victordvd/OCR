@@ -28,8 +28,8 @@ public class StrategyAnalyzer {
 	// Single - Long
 	static BigDecimal l_minUnrealGainLimit = null;// new BigDecimal(-150);
 	static BigDecimal l_minProfitLimit = new BigDecimal(60);
-	static BigDecimal l_maxLossLimit = new BigDecimal(80);
-	static BigDecimal l_maxGainSpread = new BigDecimal(400);
+	static BigDecimal l_maxLossLimit = new BigDecimal(60);
+	static BigDecimal l_maxGainSpread = new BigDecimal(350);
 
 	// Single - Short
 	static BigDecimal s_minUnrealGainLimit = new BigDecimal(-150);
@@ -41,7 +41,7 @@ public class StrategyAnalyzer {
 	static BigDecimal spread_im_minProfitLimit = new BigDecimal(50);
 	static BigDecimal spread_im_maxLossLimit = new BigDecimal(50);
 	static BigDecimal spread_im_minShortPriceLimit = BigDecimal.valueOf(8);
-	static BigDecimal spread_im_maxGainSpread = BigDecimal.valueOf(500);
+	static BigDecimal spread_im_maxGainSpread = BigDecimal.valueOf(350);
 
 	// Vertical Spread - OM
 	static BigDecimal spread_om_minUnrealGainLimit = new BigDecimal(40);

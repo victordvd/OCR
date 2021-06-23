@@ -31,6 +31,9 @@ public class OptionDynamicStrategy {
 		// 3. Analyze option informations for the most profitable option strategy
 		System.out.println("\nAnalyze strategies");
 		StrategyAnalyzer.calculateProfit(rawdata);
+
+//		System.out.println("\nCreate json files");
+//		StrategyAnalyzer.calculateProfit(rawdata);
 	}
 
 }

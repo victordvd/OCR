@@ -7,6 +7,8 @@ public class RawData {
 
 	public BigDecimal spot;
 
+	public String contract;
+
 	public List<OptionContract> callContracts;
 
 	public List<OptionContract> putContracts;

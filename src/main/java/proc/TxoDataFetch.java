@@ -33,13 +33,23 @@ public class TxoDataFetch {
 
 		String spotTxt = doc.getElementsByTag("table").get(0).getElementsByTag("tbody").get(0).children().get(0)
 				.children().get(1).text();
+
+		System.out.println("\nSpot: " + spotTxt);
+		raw.spot = new BigDecimal(spotTxt.split("（")[0]);
+
 		Element contractSelect = doc.getElementsByTag("table").get(0).getElementsByTag("tfoot").get(0).children().get(0)
 				.children().get(0).children().get(1);
 
-		System.out.println("select " + contractSelect.getClass().getName());
-
-		System.out.println(spotTxt);
-		raw.spot = new BigDecimal(spotTxt.split("（")[0]);
+		System.out.print("Contracts: ");
+		List<String> contracts = new ArrayList<>();
+		for (Element constractOpt : contractSelect.children()) {
+			String contract = constractOpt.attr("value");
+			System.out.print(contract + ", ");
+			if (constractOpt.hasAttr("selected"))
+				raw.contract = contract;
+			contracts.add(contract);
+		}
+		System.out.println();
 
 		List<Element> rows = doc.getElementsByTag("table").get(1).getElementsByTag("tbody").get(0).children();
 
