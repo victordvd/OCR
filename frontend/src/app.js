@@ -11,6 +11,8 @@ function parsePosition(o) {
     return PositionModel.getTXOInstance(ls, type, Contract.TXO, strike, 1, price);
 }
 $(function () {
+    // load json
+    console.log(data);
     var pTable = $('table');
     // let m_1 = PositionModel.getTXOInstance(LS.LONG, CP.CALL,Contract.TXO, 16000, 1, 64.5)
     // m_1.addRow(pTable)

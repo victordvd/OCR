@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import proc.JsonBuilder;
 import proc.StrategyAnalyzer;
 import proc.TxoDataFetch;
 import vo.RawData;
@@ -32,8 +33,8 @@ public class OptionDynamicStrategy {
 		System.out.println("\nAnalyze strategies");
 		StrategyAnalyzer.calculateProfit(rawdata);
 
-//		System.out.println("\nCreate json files");
-//		StrategyAnalyzer.calculateProfit(rawdata);
+		System.out.println("\nCreate json files");
+		JsonBuilder.writePositionJson(rawdata);
 	}
 
 }

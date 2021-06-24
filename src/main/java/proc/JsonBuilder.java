@@ -7,7 +7,8 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import vo.OptionContract;
+import com.google.gson.Gson;
+
 import vo.RawData;
 
 public class JsonBuilder {
@@ -16,13 +17,19 @@ public class JsonBuilder {
 
 	public static void writePositionJson(RawData rawdata) throws IOException {
 
-		String time = DateTimeFormatter.ISO_LOCAL_TIME.format(LocalDateTime.now());
-		try (BufferedWriter bw = Files
-				.newBufferedWriter(Paths.get(JSON_PATH + rawdata.contract + "_" + time + ".json"))) {
+		String time = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(LocalDateTime.now());
+//		String filename = JSON_PATH + rawdata.contract + "_" + time + ".json";
+		String filename = JSON_PATH + "data.js";
 
-			for (OptionContract oc : rawdata.callContracts) {
-//				bw.write(oc.getProfit(ls, spotPrice));
-			}
+		try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(filename))) {
+			bw.write("var data = ");
+			bw.write(new Gson().toJson(rawdata.callContracts));
+//			for (OptionContract oc : rawdata.callContracts) {
+//				bw.write(new Gson().toJson(oc));
+//				bw.newLine();
+//			}
+			bw.write(";");
+			bw.flush();
 		}
 
 	}
