@@ -17,13 +17,29 @@ function parsePosition(o: any) {
   return PositionModel.getTXOInstance(ls, type, Contract.TXO, strike, 1, price)
 }
 
+function loadContracts(){
+  let selector = $('#contractSelector')
+
+  selector.append('<tr><th>Buy</th><th>Sell</th><th>Strike</th><th>Buy</th><th>Sell</th></tr>')
+
+  data.callContracts
+  for(let i=0;i<data.strikes.length;i++){
+    selector.append('<tr><td>B</td><td>S</td><th>'+data.strikes[i]+'</td><td>B</td><td>S</td></tr>')
+  }
+}
+
 $(function () {
 
-  // load json
+  // load raw data
   console.log(data)
 
+  // set spot
+  $('#spot').val(data.spot)
 
-  let pTable = $('table')
+  // init selector
+  loadContracts()
+
+  let pTable = $('#positionTable')
   // let m_1 = PositionModel.getTXOInstance(LS.LONG, CP.CALL,Contract.TXO, 16000, 1, 64.5)
   // m_1.addRow(pTable)
   // PostionStore.getData().push(m_1)
@@ -36,7 +52,7 @@ $(function () {
 
 
   $('#addBtn').click(() => {
-    let pTable = $('table')
+    let pTable = $('#positionTable')
     let m_2 = PositionModel.getTXOInstance(LS.LONG, CP.CALL, Contract.TXO, 16000, 1, 64.5)
 
     m_2.addRow(pTable)

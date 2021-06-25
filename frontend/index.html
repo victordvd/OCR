@@ -43,8 +43,8 @@
     <br>
     <button id="addBtn">Add</button>
     <label>Spot</label>
-    <input id="spot" value="17550">
-    <table id="customers" border="1px" width="900">
+    <input id="spot" type="number">
+    <table id="positionTable" border="1px" width="900">
         <tr>
             <!-- <th class="chk"><input type="checkbox" checked="true"></th> -->
             <th></th>
@@ -58,7 +58,13 @@
     </table>
     <br>
     <!-- <canvas id="canv" width="600" height="300"></canvas> -->
-    <div id="fplot"></div>
+    <div >
+    <div id="fplot" style="display: inline-block;"></div>
+    <div style="display: inline-block;">
+        <table id="contractSelector">
+        </table>
+    </div>
+</div>
 </body>
 
 </html>

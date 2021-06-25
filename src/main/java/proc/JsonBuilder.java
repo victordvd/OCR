@@ -23,7 +23,7 @@ public class JsonBuilder {
 
 		try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(filename))) {
 			bw.write("var data = ");
-			bw.write(new Gson().toJson(rawdata.callContracts));
+			bw.write(new Gson().toJson(rawdata));
 //			for (OptionContract oc : rawdata.callContracts) {
 //				bw.write(new Gson().toJson(oc));
 //				bw.newLine();

@@ -10,6 +10,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -22,6 +23,7 @@ public class TxoDataFetch {
 
 	public static RawData fetchTxoRawData() throws IOException {
 		RawData raw = new RawData();
+		raw.strikes = new TreeSet<>();
 
 		String contractParam = "202106W4";
 		String url = "https://tw.screener.finance.yahoo.net/future/aa03?opmr=optionfull&opcm=WTXO&opym="
@@ -87,6 +89,7 @@ public class TxoDataFetch {
 					case 7:
 						call.strike = new BigDecimal(c.text());
 						put.strike = call.strike;
+						raw.strikes.add(call.strike.intValue());
 						break;
 					case 8:
 						put.bid = new BigDecimal(c.text());
