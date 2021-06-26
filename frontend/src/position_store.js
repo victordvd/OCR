@@ -14,6 +14,12 @@ var PostionStore = /** @class */ (function () {
     PostionStore.addPosition = function (p) {
         this.data.push(p);
     };
+    PostionStore.removeAllPosition = function () {
+        this.data = [];
+        PostionStore.plotPosition();
+        Utils.getPositionTable().find("tr:gt(0)").remove();
+        Utils.posiFn = {};
+    };
     PostionStore.removePosition = function (p) {
         var delRecIdx = undefined;
         this.data.forEach(function (rec, i) {
@@ -43,7 +49,7 @@ var PostionStore = /** @class */ (function () {
             },
             grid: true,
             yAxis: { label: 'Profit (tick)' },
-            xAxis: { domain: [15500, 16500], label: 'Settle Price' },
+            xAxis: { domain: [data.spot - 500, data.spot + 500], label: 'Settle Price' },
             data: fnEtStk.data,
             annotations: fnEtStk.annotations
             // data: [

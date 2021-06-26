@@ -6,9 +6,11 @@ var Utils = /** @class */ (function () {
             return '-';
         return o;
     };
+    Utils.getPositionTable = function () {
+        return $('#positionTable');
+    };
     Utils.addPosition = function (modle) {
-        var posiTable = $('#positionTable');
-        modle.addRow(posiTable);
+        modle.addRow(Utils.getPositionTable());
         PostionStore.getData().push(modle);
         PostionStore.plotPosition();
     };

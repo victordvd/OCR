@@ -8,10 +8,12 @@ class Utils {
     return o
   }
 
-  static addPosition(modle: PositionModel) {
-    let posiTable = $('#positionTable')
+  static getPositionTable() {
+    return $('#positionTable')
+  }
 
-    modle.addRow(posiTable)
+  static addPosition(modle: PositionModel) {
+    modle.addRow(Utils.getPositionTable())
 
     PostionStore.getData().push(modle)
     PostionStore.plotPosition()

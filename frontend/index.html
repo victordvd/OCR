@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    
+
     <!-- bootstrap -->
     <title>TEST</title>
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
@@ -42,30 +42,37 @@
     -->
     <br>
     <br>
-    <button id="addBtn">Add</button>
-    <label>Spot</label>
-    <input id="spot" type="number">
-    <table id="positionTable" width="900">
-        <tr>
-            <!-- <th class="chk"><input type="checkbox" checked="true"></th> -->
-            <th></th>
-            <th>標的</th>
-            <th>買賣</th>
-            <th>C/P</th>
-            <th>履約價</th>
-            <th>數量</th>
-            <th>價格</th>
-        </tr>
-    </table>
-    <br>
-    <!-- <canvas id="canv" width="600" height="300"></canvas> -->
-    <div >
-    <div id="fplot" style="display: inline-block;vertical-align: top;"></div>
-    <div style="display: inline-block;max-height:600px;overflow: auto;width: 500px;padding:10px; border: 1px solid black;">
-        <table id="contractSelector" style="width:100%;">
+    <div>
+        <label>Spot</label>
+        <input id="spot" type="number">
+        <button id="addBtn">Add</button>
+        <button id="clearBtn">Clear</button>
+    </div>
+    <div style="max-height: 350px;overflow: auto;width: 800px;">
+        <table id="positionTable" style="width:100%;">
+            <!-- height: 800px; max-height: 800px; -->
+            <tr>
+                <!-- <th class="chk"><input type="checkbox" checked="true"></th> -->
+                <th></th>
+                <th>標的</th>
+                <th>買賣</th>
+                <th>C/P</th>
+                <th>履約價</th>
+                <th>數量</th>
+                <th>價格</th>
+            </tr>
         </table>
     </div>
-</div>
+    <br>
+    <!-- <canvas id="canv" width="600" height="300"></canvas> -->
+    <div>
+        <div id="fplot" style="display: inline-block;vertical-align: top;"></div>
+        <div
+            style="display: inline-block;max-height:600px;overflow: auto;width: 500px;padding:10px; border: 1px solid black;">
+            <table id="contractSelector" style="width:100%;">
+            </table>
+        </div>
+    </div>
 </body>
 
 </html>

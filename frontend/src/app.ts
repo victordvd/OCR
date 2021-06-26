@@ -16,6 +16,9 @@ function loadContracts(){
     let p = data.putContracts[i]
     let s = data.strikes[i]
 
+    if(Math.abs(s-data.spot)>600)
+      continue
+
     let tr= '<td>'+Utils.createPosiBtn(c, LS.LONG)+'</td><td>'+Utils.createPosiBtn(c, LS.SHORT)+'</td><th>'+s+'</td><td>'+Utils.createPosiBtn(p, LS.LONG)+'</td><td>'+Utils.createPosiBtn(p, LS.SHORT)+'</td>'
 
     if(Math.abs(s-data.spot)<=25){
@@ -23,7 +26,6 @@ function loadContracts(){
     }else{
       tr = '<tr>'+tr+'</tr>'
     }
-
 
     selector.append(tr)
   }
@@ -51,6 +53,11 @@ $(function () {
     let m_2 = PositionModel.getTXOInstance(LS.LONG, CP.CALL, Contract.TXO, 16000, 1, 64.5)
 
     Utils.addPosition(m_2)
+  })
+
+  $('#clearBtn').click(() => {
+    PostionStore.removeAllPosition()
+   
   })
 
   $('#spot').change(() => {

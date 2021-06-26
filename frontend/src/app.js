@@ -8,6 +8,8 @@ function loadContracts() {
         var c = data.callContracts[i];
         var p = data.putContracts[i];
         var s = data.strikes[i];
+        if (Math.abs(s - data.spot) > 600)
+            continue;
         var tr = '<td>' + Utils.createPosiBtn(c, LS.LONG) + '</td><td>' + Utils.createPosiBtn(c, LS.SHORT) + '</td><th>' + s + '</td><td>' + Utils.createPosiBtn(p, LS.LONG) + '</td><td>' + Utils.createPosiBtn(p, LS.SHORT) + '</td>';
         if (Math.abs(s - data.spot) <= 25) {
             tr = '<tr style="background-color:skyblue;">' + tr + '</tr>';
@@ -33,6 +35,9 @@ $(function () {
     $('#addBtn').click(function () {
         var m_2 = PositionModel.getTXOInstance(LS.LONG, CP.CALL, Contract.TXO, 16000, 1, 64.5);
         Utils.addPosition(m_2);
+    });
+    $('#clearBtn').click(function () {
+        PostionStore.removeAllPosition();
     });
     $('#spot').change(function () {
         PostionStore.plotPosition();
