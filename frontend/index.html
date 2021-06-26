@@ -30,11 +30,12 @@
     <script src="src/position_store.js"></script>
     <script src="src/canvas.js"></script>
     <script src="src/model.js"></script>
+    <script src="src/util.js"></script>
     <script src="src/app.js"></script>
 </head>
 
 <body style="padding: 0px 0px 20px 20px;">
-    <h2>TXO 部位計算器 (v0.2)</h2>
+    <h2>TXO 部位計算器 (v0.3)</h2>
     <!--
     <br> 現貨價格:
     <input type="text" name="spotPrice">
@@ -44,7 +45,7 @@
     <button id="addBtn">Add</button>
     <label>Spot</label>
     <input id="spot" type="number">
-    <table id="positionTable" border="1px" width="900">
+    <table id="positionTable" width="900">
         <tr>
             <!-- <th class="chk"><input type="checkbox" checked="true"></th> -->
             <th></th>
@@ -59,9 +60,9 @@
     <br>
     <!-- <canvas id="canv" width="600" height="300"></canvas> -->
     <div >
-    <div id="fplot" style="display: inline-block;"></div>
-    <div style="display: inline-block;">
-        <table id="contractSelector">
+    <div id="fplot" style="display: inline-block;vertical-align: top;"></div>
+    <div style="display: inline-block;max-height:600px;overflow: auto;width: 500px;padding:10px; border: 1px solid black;">
+        <table id="contractSelector" style="width:100%;">
         </table>
     </div>
 </div>

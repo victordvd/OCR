@@ -41,3 +41,12 @@ canvas{
     border: 1px solid rgb(136, 0, 170);
 
 }
+
+table {
+    border: 1px solid black;
+  }
+
+  th, td {
+    border: 1px solid black;
+    padding: 3px;
+  }
