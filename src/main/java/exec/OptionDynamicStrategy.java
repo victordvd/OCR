@@ -35,6 +35,8 @@ public class OptionDynamicStrategy {
 
 		System.out.println("\nCreate json files");
 		JsonBuilder.writePositionJson(rawdata);
+
+		System.out.println("Data generated");
 	}
 
 }

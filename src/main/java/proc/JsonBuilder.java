@@ -1,6 +1,7 @@
 package proc;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,7 +14,7 @@ import vo.RawData;
 
 public class JsonBuilder {
 
-	public static final String JSON_PATH = "frontend/json/";
+	public static final String JSON_PATH = System.getProperty("user.dir") + File.separator + "frontend/json/";
 
 	public static void writePositionJson(RawData rawdata) throws IOException {
 
