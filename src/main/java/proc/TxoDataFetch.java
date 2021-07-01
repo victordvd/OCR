@@ -43,13 +43,13 @@ public class TxoDataFetch {
 				.children().get(0).children().get(1);
 
 		System.out.print("Contracts: ");
-		List<String> contracts = new ArrayList<>();
+		raw.contracts = new ArrayList<>();
 		for (Element constractOpt : contractSelect.children()) {
 			String contract = constractOpt.attr("value");
 			System.out.print(contract + ", ");
 			if (constractOpt.hasAttr("selected"))
-				raw.contract = contract;
-			contracts.add(contract);
+				raw.targetContract = contract;
+			raw.contracts.add(contract);
 		}
 		System.out.println();
 
